@@ -62,9 +62,11 @@ public class SugarDb extends SQLiteOpenHelper {
             Log.e("Sugar", e.getMessage());
         }
 
-        if ((discoveredClass == null) ||
-                (!SugarRecord.class.isAssignableFrom(discoveredClass)) ||
-                Modifier.isAbstract(discoveredClass.getModifiers())) {
+        boolean a = discoveredClass == null;
+		boolean b = !SugarRecord.class.isAssignableFrom(discoveredClass);
+		boolean c = Modifier.isAbstract(discoveredClass.getModifiers());
+		if (a || b || c) 
+		{
             return null;
         } else {
             try {

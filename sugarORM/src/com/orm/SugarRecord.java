@@ -23,6 +23,12 @@ public class SugarRecord<T>{
 
     @Ignore
     String tableName = getSqlName();
+    
+    public SugarRecord()
+    {
+    	// Empty constructor
+    	System.out.println(tableName);
+    }
 
     protected Long id = null;
 
