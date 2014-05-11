@@ -3,11 +3,11 @@ package net.lapasa.barbudget.dto;
 import android.content.Context;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
-
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -94,16 +94,49 @@ public class EntryDTO
         }
     }
 
-    public static List<Entry> getEntries(Category category, Date periodStart, Date periodEnd)
+    public List<Entry> getEntries(Category category, Date periodStart, Date periodEnd)
     {
         // Select date FROM table WHERE date BETWEEN 2014/01/01 AND 2014/01/30
 
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MM/DD");
-        String startTimeStr = sdf.format(periodStart.getTime());
-        String endTimeStr = sdf.format(periodEnd.getTime());
-        String whereClause = "id = " + category.getId()
-                + " AND "
-                + "(timestamp BETWEEN" + startTimeStr + " AND " + endTimeStr + ")";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
+        String startTimeStr = null;
+        if (periodStart != null)
+        {
+        	startTimeStr = sdf.format(periodStart.getTime());
+        }
+        
+        	
+        
+        String endTimeStr = null;
+        if (periodEnd != null)
+        {
+        	endTimeStr = sdf.format(periodEnd.getTime());
+        }
+        
+        String whereClause = "category = " + category.getId();
+        
+        if (startTimeStr != null && endTimeStr != null)
+        {
+	        whereClause += " AND (timestamp BETWEEN " + startTimeStr + " AND " + endTimeStr + ")";
+        }
+        else if (startTimeStr == null && endTimeStr != null)
+        {
+        	// Get records from 0000-00-00 to endTimeStr
+        	startTimeStr = "date('0000-01-01')";
+        	whereClause += " AND (timestamp BETWEEN " + startTimeStr + " AND " + endTimeStr + ")";
+        }
+        else if (startTimeStr != null && endTimeStr == null)
+        {
+        	// Get records between startTimeStr and today
+        	
+        	Calendar tomorrow = Calendar.getInstance();
+        	tomorrow.set(Calendar.DAY_OF_MONTH, tomorrow.get(Calendar.DAY_OF_MONTH) + 1);
+        	
+        	endTimeStr = sdf.format(tomorrow.getTime());
+        	whereClause += " AND (timestamp BETWEEN date(" + startTimeStr + ") AND date(" + endTimeStr + "))";
+        }
+        
         String[] whereArgs = null;
         String groupBy = null;
         String orderBy = "timestamp";

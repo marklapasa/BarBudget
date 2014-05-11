@@ -8,7 +8,7 @@ public class Book extends SugarRecord<Book>
 	private String edition;
 	
 	
-//	public Book(){}
+	public Book(){}
 
 	public Book(String title, String edition)
 	{

@@ -18,7 +18,7 @@ public class Entry extends SugarRecord<Entry>
     /**
      * Empty constructor needed for SugarORM 1.3
      */
-//    public Entry(){}
+    public Entry(){}
 
 
     public Entry(Date timestamp, double value, String memo, Category category)
@@ -29,7 +29,7 @@ public class Entry extends SugarRecord<Entry>
         this.category = category;
     }
 
-    public void setValue(int value)
+    public void setValue(double value)
     {
         this.value = value;
     }

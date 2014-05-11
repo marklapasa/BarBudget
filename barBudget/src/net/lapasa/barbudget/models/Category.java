@@ -15,7 +15,7 @@ public class Category extends SugarRecord<Category>
     /**
      * Empty constructor needed for SugarORM 1.3
      */
-//    public Category(){}
+    public Category(){}
 
     public Category(String name, int color)
     {

@@ -1,7 +1,5 @@
 package net.lapasa.barbudget.models;
 
-import android.content.Context;
-
 import com.orm.SugarRecord;
 
 /**
@@ -15,7 +13,7 @@ public class CategoryBudget extends SugarRecord<CategoryBudget>
     /**
      * Empty constructor needed for SugarORM 1.3
      */
-//    public CategoryBudget(){}
+    public CategoryBudget(){}
 
 
     public CategoryBudget(int periodType, int value)
