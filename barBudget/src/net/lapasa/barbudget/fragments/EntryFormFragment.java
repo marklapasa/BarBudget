@@ -4,7 +4,11 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 import net.lapasa.barbudget.R;
+import net.lapasa.barbudget.dto.EntryDTO;
+import net.lapasa.barbudget.models.Category;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -22,9 +26,15 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import dagger.Lazy;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class EntryFormFragment extends Fragment
+public class EntryFormFragment extends DaggerFragment
 {
+	@Inject
+	protected Lazy<EntryDTO> lazyEntryDTO;
+
 	public static final String SHOW_CATEGORY = "SHOW_CATEGORY";
 	private EditText amountField;
 	private Spinner categorySpinner;
@@ -35,6 +45,8 @@ public class EntryFormFragment extends Fragment
 
 	private SimpleDateFormat f = new SimpleDateFormat("MMMM d, yyyy");
 
+	private boolean isVisible;
+
 	/**
 	 * Factory method
 	 * 
@@ -42,10 +54,11 @@ public class EntryFormFragment extends Fragment
 	 *            Set true if you want to display the drop down of categories
 	 * @return
 	 */
-	public static EntryFormFragment create(boolean displayCategoryDropDown)
+	public static EntryFormFragment create(boolean visibleAtStart, boolean displayCategoryDropDown)
 	{
 		EntryFormFragment frag = new EntryFormFragment();
 		frag.setDisplayCategoryDropDown(displayCategoryDropDown);
+		frag.isVisible = visibleAtStart;
 		return frag;
 	}
 
@@ -71,6 +84,11 @@ public class EntryFormFragment extends Fragment
 			}
 		}
 
+		if (!isVisible)
+		{
+			v.setVisibility(View.GONE);
+		}
+
 		return v;
 	}
 
@@ -80,29 +98,30 @@ public class EntryFormFragment extends Fragment
 		amountField.addTextChangedListener(new TextWatcher()
 		{
 			DecimalFormat dec = new DecimalFormat("0.00");
-			
+
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count)
 			{
-				if(!s.toString().matches("^\\$(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?$"))
-	            {
-	                String userInput= ""+s.toString().replaceAll("[^\\d]", "");
-	                if (userInput.length() > 0) {
-	                    Float in=Float.parseFloat(userInput);
-	                    float percen = in/100;
-	                    amountField.setText("$"+dec.format(percen));
-	                    amountField.setSelection(amountField.getText().length());
-	                }
-	            }
+				if (!s.toString().matches("^\\$(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?$"))
+				{
+					String userInput = "" + s.toString().replaceAll("[^\\d]", "");
+					if (userInput.length() > 0)
+					{
+						Float in = Float.parseFloat(userInput);
+						float percen = in / 100;
+						amountField.setText("$" + dec.format(percen));
+						amountField.setSelection(amountField.getText().length());
+					}
+				}
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after)
 			{
 				// Do nothing
-				
+
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s)
 			{
@@ -154,7 +173,7 @@ public class EntryFormFragment extends Fragment
 		case R.id.action_save_entry:
 			if (isValid())
 			{
-				save();
+				save(null);
 				// Return to previous screen
 				getActivity().getFragmentManager().popBackStack();
 				return true;
@@ -175,18 +194,22 @@ public class EntryFormFragment extends Fragment
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-
-
 
 	/**
 	 * Collect the data from the fields and let the DTO do it's work
 	 */
-	private void save()
+	public void save(Category category)
 	{
+		double amt = 0;
+		String amtStr = amountField.getText().toString();
+		Crouton.makeText(getActivity(), amtStr + " recorded under " + category.getName(), Style.CONFIRM).show();
+		amtStr = amtStr.substring(1);
+		amt = Double.valueOf(amtStr);
 
+		lazyEntryDTO.get().create(entryDate.getTime(), amt, memoField.getText().toString(), category);
 	}
 
 	private OnDateSetListener datePickerListener = new OnDateSetListener()
@@ -200,11 +223,11 @@ public class EntryFormFragment extends Fragment
 			EntryFormFragment.this.refreshDateField();
 		}
 	};
-	
+
 	@Override
 	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
 		activity.setTitle("Create New Entry");
-	}	
+	}
 }

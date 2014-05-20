@@ -49,7 +49,7 @@ public class CategoryListAdapter extends BaseAdapter
 		View v = convertView;
 		if (v == null)
 		{
-			v = inflater.inflate(R.layout.activity_main, null);
+			v = inflater.inflate(R.layout.default_category_row, null);
 		}
 		
 		Category cat = list.get(position);

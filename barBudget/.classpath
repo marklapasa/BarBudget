@@ -5,24 +5,15 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry exported="true" kind="con" path="me.gladwell.eclipse.m2e.android.classpath.NONRUNTIME_DEPENDENCIES">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="src" output="bin/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/android-support-v4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/dagger-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/dagger-compiler-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/javawriter-2.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/javax.inject-1.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>

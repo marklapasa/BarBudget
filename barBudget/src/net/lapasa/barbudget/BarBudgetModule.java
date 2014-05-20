@@ -4,13 +4,20 @@ import javax.inject.Singleton;
 
 import net.lapasa.barbudget.dto.CategoryDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
+import net.lapasa.barbudget.fragments.CategoryFormFragment;
 import net.lapasa.barbudget.fragments.CategoryListFragment;
+import net.lapasa.barbudget.fragments.EntryFormFragment;
 import test.net.lapasa.barbduget.dto.CategoryDTOTest;
-import test.net.lapasa.barbduget.dto.EntryDTOTest;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(injects={MainActivity.class, CategoryDTOTest.class, CategoryListFragment.class} )
+@Module(
+		injects={
+				MainActivity.class, 
+				CategoryDTOTest.class, 
+				CategoryListFragment.class, 
+				CategoryFormFragment.class,
+				EntryFormFragment.class} )
 public class BarBudgetModule
 {
 	@Provides
