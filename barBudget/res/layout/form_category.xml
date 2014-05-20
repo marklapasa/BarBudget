@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- Name -->
+        <TextView
+            android:id="@+id/categoryNameLabel"
+            style="@style/FormFieldLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Category Name" />
+
+        <EditText
+            android:id="@+id/category"
+            style="@style/FormField"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/categoryNameLabel"
+            android:hint="Add Category Name" />
+
+        <!-- Color Picker --> 
+        <TextView
+            android:id="@+id/colorPickerLabel"
+            style="@style/FormFieldLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/category"
+            android:text="Category Color" />
+
+        <Button
+            style="@style/FormField"
+            android:id="@+id/colorPickerBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/colorPickerLabel"
+            android:gravity="center"
+            android:text="Color" />
+
+        <!-- Quick Entry Toggle -->
+
+        <CheckBox
+            android:id="@id/toggleQuickEntry"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/colorPickerBtn"
+            android:layout_margin="20dp"
+            android:text="Quick Entry" />
+
+        <fragment
+            android:id="@+id/quickEntryFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toggleQuickEntry"
+            class="net.lapasa.barbudget.fragments.EntryFormFragment" />
+    </RelativeLayout>
+
+</ScrollView>

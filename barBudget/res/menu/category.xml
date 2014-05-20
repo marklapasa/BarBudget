@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.lapasa.barbudget.MainActivity" >
+
+    <item
+        android:id="@+id/action_add_category"
+        android:showAsAction="always"
+        android:title="Add"/>
+    
+    <item
+        android:id="@+id/action_delete_all_categories"
+        android:title="Delete all categories"/>    
+    
+    <item
+        android:id="@+id/action_view_entries"
+        android:title="@string/action_view_entries"/>
+    <item
+        android:id="@+id/action_update_category"
+        android:title="@string/action_update_category"/>
+    <item
+        android:id="@+id/action_delete_category"
+        android:title="@string/action_delete_category"/>
+    <item
+        android:id="@+id/action_set_budget"
+        android:title="@string/action_set_budget"/>
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"/>
+
+</menu>

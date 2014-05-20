@@ -1,12 +1,16 @@
 package test.net.lapasa.barbduget.dto;
 
+import javax.inject.Inject;
+
+import net.lapasa.barbudget.BarBudgetModule;
 import net.lapasa.barbudget.dto.CategoryDTO;
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
-import android.content.Context;
 import android.test.AndroidTestCase;
 
 import com.orm.SugarApp;
+
+import dagger.ObjectGraph;
 
 /**
  * 1) Delete no records [OK]
@@ -20,7 +24,10 @@ public class CategoryDTOTest extends AndroidTestCase
     public static final String DUMMY = "DUMMY";
     public static final int COLOR_RED = 0xFF0000;
     private static final String TAG = CategoryDTO.class.getName();
-    private CategoryDTO dto;
+    
+    @Inject
+    protected CategoryDTO dto;
+    
     private Category targetCategory0;
 
 
@@ -28,7 +35,6 @@ public class CategoryDTOTest extends AndroidTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.dto = new CategoryDTO();
     }
 
     @Override

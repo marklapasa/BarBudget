@@ -1,17 +1,14 @@
 package test.net.lapasa.barbduget.dto;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import net.lapasa.barbudget.dto.CategoryDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -23,20 +20,22 @@ public class EntryDTOTest extends AndroidTestCase
     private static final String TAG = EntryDTOTest.class.getName();
 	private static final double DUMMY_VALUE = 2014.04;
 	private static final String DUMMY_MEMO = "Dummy Memo";
-    private CategoryDTO categoryDTO;
+	
+	@Inject
+    protected CategoryDTO categoryDTO;
     private Category category;
-    private EntryDTO entryDTO;
+    
+    @Inject
+    protected EntryDTO entryDTO;
 
     public void setUp() throws Exception
     {
         super.setUp();
-
-        this.categoryDTO = new CategoryDTO();
-
+        
         // Create default category
         this.category = categoryDTO.create(CategoryDTOTest.DUMMY, CategoryDTOTest.COLOR_RED);
 
-        this.entryDTO = new EntryDTO();
+        
 
     }
 

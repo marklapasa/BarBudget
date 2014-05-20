@@ -3,6 +3,7 @@
 	<name>barBudget</name>
 	<comment></comment>
 	<projects>
+		<project>sugarORM</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

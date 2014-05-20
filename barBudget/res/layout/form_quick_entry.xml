@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/form_quick_entry"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Amount -->
+    <TextView
+        android:id="@+id/amtLabel"
+        style="@style/FormFieldLabel"
+        android:layout_marginTop="20dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaction Amount" />
+    
+    <EditText
+        style="@style/FormField"
+        android:layout_below="@id/amtLabel"
+        android:id="@+id/amount"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:hint="Amount"
+        android:inputType="number"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <!-- Category Dropdown -->
+
+    <RelativeLayout
+        android:id="@+id/dropDownSection"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amount"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/categoryDropDownLabel"
+            style="@style/FormFieldLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Category" />
+
+        <Spinner
+            android:id="@+id/categorySpinner"
+            style="@style/FormField"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/categoryDropDownLabel" />
+    </RelativeLayout>
+
+    
+    <!-- Date Label -->
+    <TextView
+        android:layout_below="@id/amount"
+        android:id="@+id/dateLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaction Date" />
+    
+    <EditText
+        style="@style/FormField"
+        android:id="@+id/date"
+        android:gravity="right"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateLabel"
+        android:inputType="date" >
+    </EditText>
+    
+    
+    <!-- Memo -->
+	<TextView
+        android:id="@+id/memoLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/date"
+        android:text="Memo" />    
+
+    <EditText
+        android:id="@+id/memo"
+        style="@style/FormField"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/memoLabel"
+        android:hint="eg. store, occasion"/>
+
+</RelativeLayout>

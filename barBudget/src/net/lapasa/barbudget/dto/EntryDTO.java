@@ -1,15 +1,14 @@
 package net.lapasa.barbudget.dto;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteException;
-import android.util.Log;
-import net.lapasa.barbudget.models.Category;
-import net.lapasa.barbudget.models.Entry;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import net.lapasa.barbudget.models.Category;
+import net.lapasa.barbudget.models.Entry;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 /**
  * Created by mlapasa on 3/31/14.

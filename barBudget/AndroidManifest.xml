@@ -14,7 +14,7 @@
         android:targetSdkVersion="14" />
 
     <application
-        android:name="com.orm.SugarApp"
+        android:name="net.lapasa.barbudget.BarBudgetApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"

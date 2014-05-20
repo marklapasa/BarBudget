@@ -2,7 +2,6 @@ package net.lapasa.barbudget.dto;
 
 import android.content.Context;
 import android.util.Log;
-
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
 import net.lapasa.barbudget.models.SortRule;
@@ -10,24 +9,26 @@ import net.lapasa.barbudget.models.SortRule;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by mlapasa on 3/31/14.
  */
+@Singleton
 public class CategoryDTO
 {
+	protected EntryDTO entryDTO;
+	
     private static final String TAG = CategoryDTO.class.getName();
     private Context ctx;
-    private EntryDTO entryDTO;
 
-    /**
-     * Constructor
-     */
-    public CategoryDTO()
+    public CategoryDTO(EntryDTO entryDTO)
     {
-        this.entryDTO = new EntryDTO();
+    	this.entryDTO = entryDTO;
     }
-
-
+    
+    
     /**
      * Persist a Category to the DB
      * @param name
@@ -131,4 +132,16 @@ public class CategoryDTO
             return null;
         }
     }
+
+
+	public EntryDTO getEntryDTO()
+	{
+		return entryDTO;
+	}
+
+
+	public void deleteAll()
+	{
+		Category.deleteAll(Category.class);
+	}
 }
