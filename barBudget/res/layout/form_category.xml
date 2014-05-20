@@ -24,7 +24,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/categoryNameLabel"
             android:gravity="right"
-            android:hint="Add Category Name" />
+            android:hint="Add Category Name">
+            <requestFocus/>
+        </EditText>
 
         <!-- Color Picker -->
 

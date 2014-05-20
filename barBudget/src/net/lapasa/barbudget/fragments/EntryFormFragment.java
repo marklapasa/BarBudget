@@ -228,6 +228,6 @@ public class EntryFormFragment extends DaggerFragment
 	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
-		activity.setTitle("Create New Entry");
+//		activity.setTitle("Create New Entry");
 	}
 }

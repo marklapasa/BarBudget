@@ -40,15 +40,17 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class CategoryFormFragment extends DaggerFragment implements ValidationListener
 {
 
+	private Category existingCategory;
+
 	/**
 	 * Factory method
 	 * 
 	 * @return
 	 */
-	public static Fragment create(boolean isCreatingNewCategory)
+	public static Fragment create(Category existingCategory)
 	{
 		CategoryFormFragment f = new CategoryFormFragment();
-		f.isCreatingNewCategory = isCreatingNewCategory;
+		f.existingCategory = existingCategory;
 		return f;
 	}
 
@@ -58,7 +60,6 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 	private int color;
 	private CheckBox quickEntryToggle;
 	private View quickEntryView;
-	private boolean isCreatingNewCategory;
 	private Validator validator;
 	private boolean isValid;
 
@@ -107,23 +108,30 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 	private void configQuickEntryToggle(View v)
 	{
 		quickEntryToggle = (CheckBox) v.findViewById(R.id.toggleQuickEntry);
-		quickEntryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		if (existingCategory == null)
 		{
-
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked)
+			quickEntryToggle.setOnCheckedChangeListener(new OnCheckedChangeListener()
 			{
-				quickEntryView = quickEntryFrag.getView();
-				if (isChecked)
+
+				@Override
+				public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked)
 				{
-					quickEntryView.setVisibility(View.VISIBLE);
+					quickEntryView = quickEntryFrag.getView();
+					if (isChecked)
+					{
+						quickEntryView.setVisibility(View.VISIBLE);
+					}
+					else
+					{
+						quickEntryView.setVisibility(View.GONE);
+					}
 				}
-				else
-				{
-					quickEntryView.setVisibility(View.GONE);
-				}
-			}
-		});
+			});
+		}
+		else
+		{
+			quickEntryToggle.setVisibility(View.GONE);
+		}
 	}
 
 	private void configQuickEntryFrag()
@@ -162,17 +170,16 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 
 				dialog = builder.create();
 				dialog.show();
-
 			}
 		});
 
-		if (isCreatingNewCategory)
+		if (existingCategory == null)
 		{
 			setColor(getRandomColor());
 		}
 		else
 		{
-			// setColor(originalColor);
+			setColor(existingCategory.getColor());
 		}
 	}
 
@@ -191,13 +198,11 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 				}
 			}
 		});
-	}
-
-	@Override
-	public void onAttach(Activity activity)
-	{
-		super.onAttach(activity);
-		activity.setTitle("Create New Category");
+		
+		if (existingCategory != null)
+		{
+			categoryField.setText(existingCategory.getName());
+		}
 	}
 
 	public void setColor(int color)
@@ -239,19 +244,31 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 	{
 		CategoryDTO categoryDTO = lazyCategoryDTO.get();
 		String categoryName = categoryField.getText().toString();
-
-		Category createdCategory = categoryDTO.create(categoryName, color);
-
-		/*
-		 * Delegate saving the entry associated to this category by letting the
-		 * entry form save it's own data
-		 */
-		if (quickEntryToggle.isChecked())
+		
+		if (existingCategory == null)
 		{
-			quickEntryFrag.save(createdCategory);
+			Category createdCategory = categoryDTO.create(categoryName, color);
+
+			/*
+			 * Delegate saving the entry associated to this category by letting the
+			 * entry form save it's own data
+			 */
+			if (quickEntryToggle.isChecked())
+			{
+				quickEntryFrag.save(createdCategory);
+			}
+
+			Crouton.makeText(getActivity(), "Category " + categoryName + " created!", Style.CONFIRM).show();			
+		}
+		else
+		{
+			existingCategory.setName(categoryName);
+			existingCategory.setColor(color);
+			categoryDTO.update(existingCategory);
+			Crouton.makeText(getActivity(), "Category " + categoryName + " updated", Style.CONFIRM).show();
 		}
 
-		Crouton.makeText(getActivity(), "Category " + categoryName + " created!", Style.CONFIRM).show();
+
 		getActivity().getFragmentManager().popBackStack();
 	}
 
@@ -277,5 +294,14 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 			Crouton.makeText(getActivity(), msg, Style.ALERT).show();
 		}
 		getActivity().invalidateOptionsMenu();
+	}
+
+	
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		String title = (existingCategory != null) ? "Edit Category" : "Create New Category"; 
+		getActivity().setTitle(title);
 	}
 }

@@ -55,6 +55,7 @@ public class CategoryListAdapter extends BaseAdapter
 		Category cat = list.get(position);
 		TextView tv = (TextView) v.findViewById(R.id.name);
 		tv.setText(cat.getName());
+		v.setBackgroundColor(cat.getColor());
 		return v;
 	}
 
