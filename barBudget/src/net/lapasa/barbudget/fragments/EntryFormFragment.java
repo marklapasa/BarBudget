@@ -14,11 +14,8 @@ import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
 import net.lapasa.barbudget.models.SortRule;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -244,7 +241,7 @@ public class EntryFormFragment extends DaggerFragment implements ValidationListe
 			@Override
 			public void onClick(View v)
 			{
-				new DatePickerDialog(getActivity(), datePickerListener, entryDate.get(Calendar.YEAR), Calendar.MONTH, Calendar.DAY_OF_MONTH).show();
+				new DatePickerDialog(getActivity(), datePickerListener, entryDate.get(Calendar.YEAR), entryDate.get(Calendar.MONTH), entryDate.get(Calendar.DAY_OF_MONTH)).show();
 			}
 		});
 	}

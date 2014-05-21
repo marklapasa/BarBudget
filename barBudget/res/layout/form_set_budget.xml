@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Left column -->
+
+
+    <!-- Daily -->
+
+    <TextView
+        android:id="@+id/dailyBudgetLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:text="Daily" />
+
+    <EditText
+        android:id="@+id/dailyBudget"
+        style="@style/FormField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dailyBudgetLabel"
+        android:gravity="right"
+        android:hint="Add amount"
+        android:inputType="number" >
+        <requestFocus />
+    </EditText>
+
+    <!-- Monthly -->
+
+    <TextView
+        android:id="@+id/monthlyBudgetLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dailyBudget"
+        android:paddingTop="20dp"
+        android:text="Monthly" />
+
+    <EditText
+        android:id="@+id/monthlyBudget"
+        style="@style/FormField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/monthlyBudgetLabel"
+        android:gravity="right"
+        android:hint="Add amount"
+        android:inputType="number" />
+
+    <!-- Annual -->
+
+    <TextView
+        android:id="@+id/annualBudgetLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/monthlyBudget"
+        android:paddingTop="20dp"
+        android:text="Annual" />
+
+    <EditText
+        android:id="@+id/annualBudget"
+        style="@style/FormField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/annualBudgetLabel"
+        android:gravity="right"
+        android:hint="Add amount"
+        android:inputType="number" />
+
+    <!-- Right column -->
+
+    <View
+        android:id="@+id/centerline"
+        android:layout_width="1px"
+        android:layout_height="1px"
+        android:layout_centerHorizontal="true" />
+    
+    <!-- Weekly -->
+    
+    <TextView
+        android:id="@+id/weeklyBudgetLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/centerline"
+        android:paddingTop="20dp"
+        android:text="Weekly" />
+
+    <EditText
+        android:id="@+id/weeklyBudget"
+        style="@style/FormField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/centerline"
+        android:layout_below="@id/weeklyBudgetLabel"
+        android:gravity="right"
+        android:hint="Add amount"
+        android:inputType="number" />
+    
+    <!-- Quarterly -->
+    <TextView
+        android:id="@+id/quarterlyBudgetLabel"
+        style="@style/FormFieldLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/centerline"
+        android:layout_below="@id/weeklyBudget"
+        android:paddingTop="20dp"
+        android:text="Quarterly" />
+
+    <EditText
+        android:id="@+id/quarterlyBudget"
+        style="@style/FormField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/centerline"
+        android:layout_below="@id/quarterlyBudgetLabel"
+        android:gravity="right"
+        android:hint="Add amount"
+        android:inputType="number" />    
+
+</RelativeLayout>

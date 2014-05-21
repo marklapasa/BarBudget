@@ -20,7 +20,7 @@
         style="@style/FormField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Amount"
+        android:hint="Add Amount"
         android:inputType="number"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -62,7 +62,8 @@
         style="@style/FormField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:inputType="date" >
+        android:inputType="date" 
+        android:editable="false">
     </EditText>
 
     <!-- Memo -->

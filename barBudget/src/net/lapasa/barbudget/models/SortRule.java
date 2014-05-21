@@ -8,4 +8,5 @@ public class SortRule
     public static final int SORT_ALPHABETICALLY = 0;
     public static final int SORT_LOW_TO_HIGH = 1;
     public static final int SORT_HIGH_TO_LOW = 2;
+    public static final int SORT_MOST_FREQUENT = 3;
 }
