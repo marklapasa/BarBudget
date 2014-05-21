@@ -2,57 +2,64 @@ package net.lapasa.barbudget.models;
 
 import java.util.Date;
 
-/**
- * Created by mlapasa on 3/31/14.
- */
 public class PeriodModel
 {
-    public static final int WEEK = 7;
-    public static final int MONTH = 30;
-    public static final int QUARTER = 90;
-    public static final int ANNUAL = 356;
+	public static final int DAILY = 86400000;
+	public static final int WEEKLY = DAILY * 7;
+	public static final int MONTHLY = DAILY * 30;
+	public static final int QUARTERLY = DAILY * 90;
+	public static final int ANNUALLY = DAILY * 356;
 
-    private Date periodStart;
-    private Date periodEnd;
-    private int type;
+	private Date periodStart;
+	private Date periodEnd;
+	private int type;
 
-    public PeriodModel(Date periodStart, Date periodEnd)
-    {
-        this.periodStart = periodStart;
-        this.periodEnd = periodEnd;
+	public PeriodModel(Date periodStart, Date periodEnd)
+	{
+		this.periodStart = periodStart;
+		this.periodEnd = periodEnd;
 
-        setPeriodType();
-    }
+		setPeriodType();
+	}
 
-    private void setPeriodType()
-    {
-        long diff = periodEnd.getTime() - periodStart.getTime();
+	private void setPeriodType()
+	{
+		long diff = periodEnd.getTime() - periodStart.getTime();
 
-        if (diff < WEEK)
-        {
-            this.type = WEEK;
-        }
-        else if (diff < MONTH)
-        {
-            this.type = MONTH;
-        }
-        else if (diff < QUARTER)
-        {
-            this.type = QUARTER;
-        }
-        else
-        {
-            this.type = ANNUAL;
-        }
-    }
+		if (diff < DAILY)
+		{
+			this.type = DAILY;
+		}
+		else if (diff < WEEKLY)
+		{
+			this.type = WEEKLY;
+		}
+		else if (diff < MONTHLY)
+		{
+			this.type = MONTHLY;
+		}
+		else if (diff < QUARTERLY)
+		{
+			this.type = QUARTERLY;
+		}
+		else
+		{
+			this.type = ANNUALLY;
+		}
+	}
 
-    public Date getPeriodEnd()
-    {
-        return periodEnd;
-    }
+	public int getPeriodType()
+	{
+		return type;
+	}
 
-    public Date getPeriodStart()
-    {
-        return periodStart;
-    }
+	public Date getPeriodEnd()
+	{
+		return periodEnd;
+	}
+
+	public Date getPeriodStart()
+	{
+		return periodStart;
+	}
 }

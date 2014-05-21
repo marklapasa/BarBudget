@@ -7,18 +7,18 @@ import javax.inject.Inject;
 import net.lapasa.barbudget.R;
 import net.lapasa.barbudget.dto.CategoryDTO;
 import net.lapasa.barbudget.models.Category;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -51,6 +51,7 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 	{
 		CategoryFormFragment f = new CategoryFormFragment();
 		f.existingCategory = existingCategory;
+		f.isValid = (existingCategory != null); 
 		return f;
 	}
 
@@ -136,7 +137,7 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 
 	private void configQuickEntryFrag()
 	{
-		quickEntryFrag = EntryFormFragment.create(quickEntryToggle.isChecked(), false);//(EntryFormFragment) getActivity().getFragmentManager().findFragmentById(R.id.quickEntryFragment);
+		quickEntryFrag = EntryFormFragment.create(null);//(EntryFormFragment) getActivity().getFragmentManager().findFragmentById(R.id.quickEntryFragment);
 		FragmentTransaction txn = getFragmentManager().beginTransaction();
 		txn.replace(R.id.quickEntryContainer, quickEntryFrag);
 		txn.commit();
@@ -186,23 +187,27 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 	private void configCategoryName(View v)
 	{
 		categoryField = (EditText) v.findViewById(R.id.category);
-		categoryField.setOnFocusChangeListener(new OnFocusChangeListener()
-		{
-
-			@Override
-			public void onFocusChange(View v, boolean hasFocus)
-			{
-				if (!hasFocus)
-				{
-					validator.validate();
-				}
-			}
-		});
 		
 		if (existingCategory != null)
 		{
 			categoryField.setText(existingCategory.getName());
 		}
+		
+		categoryField.addTextChangedListener(new TextWatcher()
+		{
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+				validator.validate();
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {};
+			
+			@Override
+			public void afterTextChanged(Editable s){}
+		});
 	}
 
 	public void setColor(int color)
@@ -267,7 +272,6 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 			categoryDTO.update(existingCategory);
 			Crouton.makeText(getActivity(), "Category " + categoryName + " updated", Style.CONFIRM).show();
 		}
-
 
 		getActivity().getFragmentManager().popBackStack();
 	}

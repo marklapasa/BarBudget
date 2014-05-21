@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import net.lapasa.barbudget.BarBudgetApplication;
 import net.lapasa.barbudget.MainActivity;
 import net.lapasa.barbudget.R;
 import net.lapasa.barbudget.dto.CategoryDTO;
@@ -14,11 +13,13 @@ import net.lapasa.barbudget.fragments.adapters.CategoryListAdapter;
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
 import net.lapasa.barbudget.models.SortRule;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,15 +27,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import dagger.Lazy;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class CategoryListFragment extends ListFragment implements OnItemLongClickListener
+public class CategoryListFragment extends DaggerListFragment implements OnItemLongClickListener, OnItemClickListener
 {
 	private static final String TAG = CategoryFormFragment.class.getName();
 
@@ -51,10 +51,12 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 	private CategoryListAdapter adapter;
 	private List<Category> categories;
 
-	private ListView listView;
 
 	private View actionsList;
 
+	/**
+	 * Constructor
+	 */
 	public CategoryListFragment()
 	{
 		super();
@@ -62,26 +64,19 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 		categories = new ArrayList<Category>();
 		adapter = new CategoryListAdapter(categories);
 		setListAdapter(adapter);
-		
-	
 	}
 
 
-	@Override
-	public void onAttach(Activity activity)
-	{
-		super.onAttach(activity);
-		
-		// This is normally done in DaggerFragment but this doesn't extend from that class
-		((BarBudgetApplication) getActivity().getApplication()).inject(this);
-		
-		
-	}
 
 	@Override
 	public void onResume()
 	{
 		super.onResume();
+		Drawable d = new ColorDrawable(Color.BLACK); // Default to black
+		getActivity().getActionBar().setBackgroundDrawable(d);
+		
+		
+		
 		refresh();
 	}
 
@@ -95,11 +90,12 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 		{
 			this.categories.addAll(categories);
 		}
-		else if (size == 0)
+		adapter.notifyDataSetChanged();
+
+		if (size == 0)
 		{
 			setEmptyText("Please create a category");
 		}
-		adapter.notifyDataSetChanged();
 
 	}
 
@@ -145,14 +141,7 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 		((MainActivity)getActivity()).showFragment(CategoryFormFragment.create(null));
 	}
 
-	@Override
-	public void setListAdapter(ListAdapter adapter)
-	{
-		super.setListAdapter(adapter);
 
-		// Obtain reference to list of categories
-		this.categories = ((CategoryListAdapter) adapter).getCategories();
-	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
@@ -174,18 +163,69 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 		});	
 		
 		
-		listView = getListView();
+		
 		
 		/* Configure long item press on list */
-		listView.setOnItemLongClickListener(this);
+		getListView().setOnItemLongClickListener(this);
 		
 		/* Configure short item press on list */
+		getListView().setOnItemClickListener(this);
 	}
 
-	/**
-	 * Display options for View Entries, Update Category, Delete Category, and Set Budget
-	 */
+
+
+	
+	/*
 	@Override
+	public boolean onItemLongClickEXPERIMENTAL(AdapterView<?> arg0, View arg1, int index, long arg3)
+	{
+		final Category selectedCategory = categories.get(index);
+
+		final CharSequence[] items = new CharSequence[]
+				{getString(R.string.action_view_entries),
+				 getString(R.string.action_update_category),
+				 getString(R.string.action_delete_category),
+				 getString(R.string.action_set_budget)};
+		
+		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				String label = (String) items[which];
+				Fragment targetFrag = null;
+				if (label.equalsIgnoreCase(getString(R.string.action_view_entries)))
+				{
+					targetFrag = EntryListFragment.create(selectedCategory);
+				}
+				else if (label.equalsIgnoreCase(getString(R.string.action_update_category)))
+				{
+					targetFrag = CategoryFormFragment.create(selectedCategory);
+				}
+				else if (label.equalsIgnoreCase(getString(R.string.action_delete_category)))
+				{
+					deleteCategory(selectedCategory);
+				}
+				else if (label.equalsIgnoreCase(getString(R.string.action_set_budget)))
+				{
+					
+				}
+				
+				if (targetFrag != null)
+				{
+					((MainActivity)getActivity()).showFragment(targetFrag);
+				}				
+			}
+		};
+		
+		super.getLongPressMenu(items, listener).show();
+		
+
+		return true;
+	}
+	*/
+	
+	
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int index, long arg3)
 	{		
 		final Category selectedCategory = categories.get(index);
@@ -206,13 +246,14 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 			public void onClick(DialogInterface dialog, int which)
 			{
 				String label = (String) items[which];
+				Fragment targetFrag = null;
 				if (label.equalsIgnoreCase(getString(R.string.action_view_entries)))
 				{
-					
+					targetFrag = EntryListFragment.create(selectedCategory);
 				}
 				else if (label.equalsIgnoreCase(getString(R.string.action_update_category)))
 				{
-					((MainActivity)getActivity()).showFragment(CategoryFormFragment.create(selectedCategory));			
+					targetFrag = CategoryFormFragment.create(selectedCategory);
 				}
 				else if (label.equalsIgnoreCase(getString(R.string.action_delete_category)))
 				{
@@ -220,11 +261,14 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 				}
 				else if (label.equalsIgnoreCase(getString(R.string.action_set_budget)))
 				{
-					
+					targetFrag = SetBudgetFragment.create(selectedCategory);
+				}
+				
+				if (targetFrag != null)
+				{
+					((MainActivity)getActivity()).showFragment(targetFrag);
 				}
 			}
-
-			
 		});
 		builder.show();
 		return true;
@@ -237,6 +281,7 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 	 */
 	private void deleteCategory(final Category selectedCategory)
 	{
+		// TODO: Skip the dialog if the related preferences says so
 		final String categoryName = selectedCategory.getName();
 		
 		AlertDialog.Builder builderDelete = new AlertDialog.Builder(getActivity());
@@ -266,5 +311,25 @@ public class CategoryListFragment extends ListFragment implements OnItemLongClic
 			}
 		});
 		builderDelete.show();
+	}
+
+
+	/**
+	 * When a category is selected, the user will be prompted to enter an entry
+	 * associated to that category
+	 * 
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3
+	 */
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int index, long arg3)
+	{
+		final Category selectedCategory = categories.get(index);
+		
+		EntryFormFragment entryFormFrag = EntryFormFragment.create(selectedCategory);
+		
+		((MainActivity)getActivity()).showFragment(entryFormFrag);
 	}	
 }

@@ -4,9 +4,6 @@ import java.util.Date;
 
 import com.orm.SugarRecord;
 
-/**
- * Created by mlapasa on 3/31/14.
- */
 public class Entry extends SugarRecord<Entry>
 {
 

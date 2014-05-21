@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/form_quick_entry"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <!-- Amount -->
+
     <TextView
         android:id="@+id/amtLabel"
         style="@style/FormFieldLabel"
-        android:layout_marginTop="20dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Transaction Amount" />
-    
+
     <EditText
-        style="@style/FormField"
-        android:layout_below="@id/amtLabel"
         android:id="@+id/amount"
+        style="@style/FormField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Amount"
@@ -25,11 +26,11 @@
 
     <!-- Category Dropdown -->
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/dropDownSection"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/amount"
+        android:orientation="vertical"
         android:visibility="gone" >
 
         <TextView
@@ -40,48 +41,44 @@
             android:text="Category" />
 
         <Spinner
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:id="@+id/categorySpinner"
-            style="@style/FormField"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/categoryDropDownLabel" />
-    </RelativeLayout>
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
-    
     <!-- Date Label -->
+
     <TextView
-        android:layout_below="@id/amount"
         android:id="@+id/dateLabel"
         style="@style/FormFieldLabel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Transaction Date" />
-    
+
     <EditText
-        style="@style/FormField"
         android:id="@+id/date"
+        style="@style/FormField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dateLabel"
         android:inputType="date" >
     </EditText>
-    
-    
+
     <!-- Memo -->
-	<TextView
+
+    <TextView
         android:id="@+id/memoLabel"
         style="@style/FormFieldLabel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/date"
-        android:text="Memo" />    
+        android:text="Memo" />
 
     <EditText
         android:id="@+id/memo"
         style="@style/FormField"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/memoLabel"
-        android:hint="eg. store, occasion"/>
+        android:hint="eg. store, occasion" />
 
-</RelativeLayout>
+</LinearLayout>

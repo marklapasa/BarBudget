@@ -1,18 +1,24 @@
 package net.lapasa.barbudget.fragments;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import net.lapasa.barbudget.R;
+import net.lapasa.barbudget.dto.CategoryDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
 import net.lapasa.barbudget.models.Category;
+import net.lapasa.barbudget.models.Entry;
+import net.lapasa.barbudget.models.SortRule;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Fragment;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,48 +32,95 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+
+import com.mobsandgeeks.saripaar.Rule;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.Validator.ValidationListener;
+import com.mobsandgeeks.saripaar.annotation.Required;
+import com.mobsandgeeks.saripaar.annotation.TextRule;
+
 import dagger.Lazy;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class EntryFormFragment extends DaggerFragment
+public class EntryFormFragment extends DaggerFragment implements ValidationListener, IRefreshable 
 {
 	@Inject
 	protected Lazy<EntryDTO> lazyEntryDTO;
 
+	@Inject
+	protected Lazy<CategoryDTO> lazyCategoryDTO;
+	
 	public static final String SHOW_CATEGORY = "SHOW_CATEGORY";
+	
+	@Required(order = 1)
+	@TextRule(order = 2, message="You must enter a dollar amount")
 	private EditText amountField;
 	private Spinner categorySpinner;
 	private EditText dateField;
 	private EditText memoField;
-	private boolean displayCategoryDropDown;
 	private Calendar entryDate;
 
 	private SimpleDateFormat f = new SimpleDateFormat("MMMM d, yyyy");
 
 	private boolean isVisible;
 
+	private Category existingCategory;
+
+	private boolean isValid;
+
+	private Validator validator;
+
+	private Entry existingEntry;
+
+
+
 	/**
-	 * Factory method
+	 * Factory method for creating new entries for an existing category OR
 	 * 
-	 * @param displayCategoryDropDown
-	 *            Set true if you want to display the drop down of categories
+	 * @param selectedCategory
 	 * @return
 	 */
-	public static EntryFormFragment create(boolean visibleAtStart, boolean displayCategoryDropDown)
+	public static EntryFormFragment create(Category selectedCategory, Entry selectedEntry)
 	{
 		EntryFormFragment frag = new EntryFormFragment();
-		frag.setDisplayCategoryDropDown(displayCategoryDropDown);
-		frag.isVisible = visibleAtStart;
+		
+		if (selectedEntry != null || selectedCategory != null)
+		{
+			frag.existingCategory = selectedCategory;
+			frag.existingEntry = selectedEntry;
+			frag.isVisible = true;
+			frag.setHasOptionsMenu(true);
+		}
+		else
+		{
+			frag.isVisible = false;
+			frag.setHasOptionsMenu(false);			
+		}
 		return frag;
 	}
+	
+	public static EntryFormFragment create(Category selectedCategory)
+	{
+		return EntryFormFragment.create(selectedCategory, null);
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		validator = new Validator(this);
+		validator.setValidationListener(this);
+	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View v = inflater.inflate(R.layout.form_quick_entry, null);
 		configAmountField(v);
-		categorySpinner = (Spinner) v.findViewById(R.id.categorySpinner);
+		configCategorySpinner(v);
 
 		configCurrentDateOnDatePicker(v);
 		memoField = (EditText) v.findViewById(R.id.memo);
@@ -92,13 +145,52 @@ public class EntryFormFragment extends DaggerFragment
 		return v;
 	}
 
+	private void configCategorySpinner(View v)
+	{
+		View categorySection = v.findViewById(R.id.dropDownSection);
+		categorySpinner = (Spinner) v.findViewById(R.id.categorySpinner);
+		
+		
+		if(existingCategory != null)
+		{
+			// Get list of existing category
+			CategoryDTO categoryDTO = lazyCategoryDTO.get();
+			List<Category> categories = categoryDTO.getCategories(SortRule.SORT_ALPHABETICALLY);
+			
+			// Set drop down to selected category
+			categorySection.setVisibility(View.VISIBLE);
+			SpinnerAdapter adapter = new CategorySpinnerAdapter(categories);
+			categorySpinner.setAdapter(adapter);
+			setCategory(existingCategory, categories);			
+		}
+		
+	}
+	
+		 
+	 /**
+	  * Set the spinner to the index that matches the target category 
+	  * @param targetCategory
+	  * @param categories
+	  */
+	public void setCategory(Category targetCategory, List<Category> categories)
+	{
+		for (int i = 0; i < categories.size(); i ++)
+		{
+			String cName = categories.get(i).getName();
+			if (targetCategory.getName().equalsIgnoreCase(cName))
+			{
+				categorySpinner.setSelection(i);
+				return;
+			}
+		}
+	}	
+
 	private void configAmountField(View v)
 	{
+		final NumberFormat formatter = NumberFormat.getCurrencyInstance();
 		amountField = (EditText) v.findViewById(R.id.amount);
 		amountField.addTextChangedListener(new TextWatcher()
 		{
-			DecimalFormat dec = new DecimalFormat("0.00");
-
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count)
 			{
@@ -109,10 +201,11 @@ public class EntryFormFragment extends DaggerFragment
 					{
 						Float in = Float.parseFloat(userInput);
 						float percen = in / 100;
-						amountField.setText("$" + dec.format(percen));
+						amountField.setText(formatter.format(percen));
 						amountField.setSelection(amountField.getText().length());
 					}
 				}
+				validator.validate();
 			}
 
 			@Override
@@ -128,6 +221,16 @@ public class EntryFormFragment extends DaggerFragment
 				// Do nothing
 			}
 		});
+		
+		if(existingEntry != null)
+		{
+			amountField.setText(formatter.format(existingEntry.getValue()));
+		}
+		
+		if (existingCategory != null)
+		{
+			amountField.requestFocus();
+		}
 	}
 
 	private void configCurrentDateOnDatePicker(View v)
@@ -151,17 +254,20 @@ public class EntryFormFragment extends DaggerFragment
 		dateField.setText(f.format(entryDate.getTime()));
 	}
 
-	private void setDisplayCategoryDropDown(boolean displayCategoryDropDown)
-	{
-		this.displayCategoryDropDown = displayCategoryDropDown;
-	}
-
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
 	{
 		menu.clear();
 		MenuInflater inflater = getActivity().getMenuInflater();
+		
 		inflater.inflate(R.menu.form_quick_entry, menu);
+		menu.getItem(0).setEnabled(isValid);
+		
+		if (existingEntry == null)
+		{
+			menu.removeItem(R.id.action_delete_entry);
+		}
+	
 		super.onPrepareOptionsMenu(menu);
 	}
 
@@ -173,7 +279,13 @@ public class EntryFormFragment extends DaggerFragment
 		case R.id.action_save_entry:
 			if (isValid())
 			{
-				save(null);
+				// If category spinner is available, use that selected category
+				if (categorySpinner.getVisibility() == View.VISIBLE)
+				{
+					existingCategory = (Category) categorySpinner.getSelectedItem();
+				}
+				
+				save(existingCategory);
 				// Return to previous screen
 				getActivity().getFragmentManager().popBackStack();
 				return true;
@@ -182,6 +294,9 @@ public class EntryFormFragment extends DaggerFragment
 			{
 				return super.onOptionsItemSelected(item);
 			}
+		case R.id.action_delete_entry:
+			EntryFormDialogs.deleteEntry(this, existingEntry, lazyEntryDTO.get(), true);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -228,6 +343,49 @@ public class EntryFormFragment extends DaggerFragment
 	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
-//		activity.setTitle("Create New Entry");
+		String msg = null;
+		if (existingEntry != null)
+		{
+			msg = "Update Entry";
+		}
+		else if (existingCategory != null)
+		{
+			msg = "Create New Entry";
+		}
+		
+		if (msg != null)
+		{
+			activity.setTitle(msg);
+		}
 	}
+
+	@Override
+	public void onValidationSucceeded()
+	{
+		isValid = true;
+		getActivity().invalidateOptionsMenu();
+	}
+
+	@Override
+	public void onValidationFailed(View failedView, Rule<?> failedRule)
+	{
+		isValid = false;
+		String msg = failedRule.getFailureMessage();
+		if (failedView instanceof EditText)
+		{
+			failedView.requestFocus();
+			((EditText) failedView).setError(msg);
+		}
+		else
+		{
+			Crouton.makeText(getActivity(), msg, Style.ALERT).show();
+		}
+		getActivity().invalidateOptionsMenu();
+	}
+	
+	public void refresh()
+	{
+		// Do nothing; this view cannot be refreshed
+	}
+
 }

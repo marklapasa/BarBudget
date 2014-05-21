@@ -9,7 +9,7 @@ public class Category extends SugarRecord<Category>
 {
     private String name;
     private int color;
-    private CategoryBudget budget;
+//    private List<CategoryBudget> budgets;
     private double sum;
 
     /**
@@ -43,15 +43,17 @@ public class Category extends SugarRecord<Category>
         this.color = color;
     }
 
-    public CategoryBudget getBudget()
+    /*
+    public List<CategoryBudget> getBudgets()
     {
-        return budget;
+        return budgets;
     }
 
-    public void setBudget(CategoryBudget budget)
+    public void setBudget(List<CategoryBudget> budgets)
     {
-        this.budget = budget;
+        this.budgets = budgets;
     }
+    */
 
     public double getSum()
     {
