@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import net.lapasa.barbudget.R;
 import net.lapasa.barbudget.dto.CategoryDTO;
+import net.lapasa.barbudget.dto.CategoryTallyDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
@@ -70,6 +71,9 @@ public class EntryFormFragment extends DaggerFragment implements ValidationListe
 	private Validator validator;
 
 	private Entry existingEntry;
+
+	@Inject
+	protected Lazy<CategoryTallyDTO> lazyCategoryTallyDTO;
 
 
 
@@ -319,9 +323,12 @@ public class EntryFormFragment extends DaggerFragment implements ValidationListe
 		String amtStr = amountField.getText().toString();
 		Crouton.makeText(getActivity(), amtStr + " recorded under " + category.getName(), Style.CONFIRM).show();
 		amtStr = amtStr.substring(1);
+		amtStr = amtStr.replace(",", "");
 		amt = Double.valueOf(amtStr);
 
-		lazyEntryDTO.get().create(entryDate.getTime(), amt, memoField.getText().toString(), category);
+		EntryDTO entryDTO = lazyEntryDTO.get();
+		entryDTO.create(entryDate.getTime(), amt, memoField.getText().toString(), category);
+		lazyCategoryTallyDTO.get().updateTallies(category);
 	}
 
 	private OnDateSetListener datePickerListener = new OnDateSetListener()

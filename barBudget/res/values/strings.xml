@@ -4,7 +4,7 @@
     <string name="app_name">BarBudget</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_view_entries">View Entries</string>
-    <string name="action_update_category">Update Category</string>
+    <string name="action_update_category">Edit Category</string>
     <string name="action_delete_category">Delete Category</string>
     <string name="action_set_budget">Set Budget</string>
     <string name="action_settings">Settings</string>

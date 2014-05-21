@@ -7,11 +7,16 @@ import javax.inject.Inject;
 
 import net.lapasa.barbudget.MainActivity;
 import net.lapasa.barbudget.R;
+import net.lapasa.barbudget.dto.CategoryBudgetDTO;
 import net.lapasa.barbudget.dto.CategoryDTO;
+import net.lapasa.barbudget.dto.CategoryTallyDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
 import net.lapasa.barbudget.fragments.adapters.CategoryListAdapter;
 import net.lapasa.barbudget.models.Category;
+import net.lapasa.barbudget.models.CategoryBudget;
+import net.lapasa.barbudget.models.CategoryTally;
 import net.lapasa.barbudget.models.Entry;
+import net.lapasa.barbudget.models.PeriodModel;
 import net.lapasa.barbudget.models.SortRule;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -45,14 +50,19 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 
 	@Inject
 	protected Lazy<EntryDTO> lazyEntryDTO;
-
+	
+	@Inject
+	protected Lazy<CategoryTallyDTO> lazyCategoryTallyDTO;
 	
 	protected CategoryDTO dto;
 	private CategoryListAdapter adapter;
 	private List<Category> categories;
 
 
-	private View actionsList;
+	private Category categoryWithHighestTally;
+
+	@Inject
+	protected Lazy<CategoryBudgetDTO> lazyCategoryBudgetDTO;
 
 	/**
 	 * Constructor
@@ -83,12 +93,19 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 	private void refresh()
 	{
 		dto = lazyCategoryDTO.get();
-		List<Category> categories = dto.getCategories(SortRule.SORT_HIGH_TO_LOW);
+		
+		/* This will fetch all possible Categories */
+		List<Category> categories = dto.getCategories(SortRule.SORT_ALPHABETICALLY);
 		int size = categories.size();
 		this.categories.clear();
 		if (size > 0)
 		{
 			this.categories.addAll(categories);
+
+			/* For each category, get the CategoryTally for target periodType and store it in the Category's Sum*/
+			injectCategoryTallyForPeriod(PeriodModel.RANGE_TODAY);
+			injectCategoryBudgetForPeriod(PeriodModel.RANGE_TODAY);
+			
 		}
 		adapter.notifyDataSetChanged();
 
@@ -98,6 +115,81 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 		}
 
 	}
+
+	/**
+	 * Provide category instances with enough information to draw a budget bar graph
+	 * @param periodType
+	 */	
+	private void injectCategoryBudgetForPeriod(int periodType)
+	{
+		CategoryBudgetDTO categoryBudgetDTO = lazyCategoryBudgetDTO.get();
+		for (Category category : categories)
+		{
+			// 1) Get Budget Object for each category
+			CategoryBudget budget = categoryBudgetDTO.getBudget(periodType, category);
+			
+			// 2) Get budget value for target period type
+			if (budget != null)
+			{
+				double value = budget.getValue();
+				
+				// 3) Store that value into the Category instance
+				category.setBudget(value);
+			}
+		}
+	}
+
+
+
+	/**
+	 * Provide category instances with enough information to draw a bar graph
+	 * @param periodType
+	 */
+	private void injectCategoryTallyForPeriod(int periodType)
+	{
+		categoryWithHighestTally = null;
+		
+		CategoryTallyDTO categoryTallyDTO = lazyCategoryTallyDTO.get();
+		for (Category category : categories)
+		{
+			// 1) Get Tally Object For Category
+			CategoryTally tally = categoryTallyDTO.getTally(periodType, category);
+			
+			// 2) Get tally Value for target period type
+			if (tally != null)
+			{
+				double value = tally.getValue();
+				// 3) Store that type into the Category instance
+				category.setSum(value);
+
+				// 4) If this sum is greater than the highest category's sum,
+				// remember this category
+				if (categoryWithHighestTally == null)
+				{
+					categoryWithHighestTally = category;
+				}
+				else
+				{
+					if (tally.getValue() > categoryWithHighestTally.getSum())
+					{
+						categoryWithHighestTally = category;
+					}
+				}
+			}
+		}
+		
+		if (categoryWithHighestTally != null)
+		{
+			for (Category category : categories)
+			{
+				category.setHighestSum(categoryWithHighestTally.getSum());
+			}
+
+			Crouton.makeText(getActivity(), "HIGHEST: " + categoryWithHighestTally.getName() + " @ " + categoryWithHighestTally.getSum(), Style.INFO).show();
+		}
+	}
+
+
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
@@ -160,71 +252,17 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 					addNewCategory();
 				}
 			}
-		});	
-		
-		
-		
+		});		
 		
 		/* Configure long item press on list */
 		getListView().setOnItemLongClickListener(this);
 		
 		/* Configure short item press on list */
 		getListView().setOnItemClickListener(this);
+		
+		getListView().setDivider(null);
 	}
 
-
-
-	
-	/*
-	@Override
-	public boolean onItemLongClickEXPERIMENTAL(AdapterView<?> arg0, View arg1, int index, long arg3)
-	{
-		final Category selectedCategory = categories.get(index);
-
-		final CharSequence[] items = new CharSequence[]
-				{getString(R.string.action_view_entries),
-				 getString(R.string.action_update_category),
-				 getString(R.string.action_delete_category),
-				 getString(R.string.action_set_budget)};
-		
-		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialog, int which)
-			{
-				String label = (String) items[which];
-				Fragment targetFrag = null;
-				if (label.equalsIgnoreCase(getString(R.string.action_view_entries)))
-				{
-					targetFrag = EntryListFragment.create(selectedCategory);
-				}
-				else if (label.equalsIgnoreCase(getString(R.string.action_update_category)))
-				{
-					targetFrag = CategoryFormFragment.create(selectedCategory);
-				}
-				else if (label.equalsIgnoreCase(getString(R.string.action_delete_category)))
-				{
-					deleteCategory(selectedCategory);
-				}
-				else if (label.equalsIgnoreCase(getString(R.string.action_set_budget)))
-				{
-					
-				}
-				
-				if (targetFrag != null)
-				{
-					((MainActivity)getActivity()).showFragment(targetFrag);
-				}				
-			}
-		};
-		
-		super.getLongPressMenu(items, listener).show();
-		
-
-		return true;
-	}
-	*/
-	
 	
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int index, long arg3)
 	{		
@@ -240,8 +278,7 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 					 getString(R.string.action_set_budget)};
 		
 		builder.setItems(items, new OnClickListener()
-		{
-			
+		{			
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{

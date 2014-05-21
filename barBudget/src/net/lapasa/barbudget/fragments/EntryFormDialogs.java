@@ -21,7 +21,7 @@ public class EntryFormDialogs
 	 */
 	public static void deleteEntry(final IRefreshable client, final Entry existingEntry, final EntryDTO entryDTO, final boolean goToPrevScreen)
 	{
-		String valStr = NumberFormat.getInstance().format(existingEntry.getValue());
+		String valStr = NumberFormat.getCurrencyInstance().format(existingEntry.getValue());
 		final Activity activity = client.getActivity();
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		builder.setTitle("Confirm delete record");

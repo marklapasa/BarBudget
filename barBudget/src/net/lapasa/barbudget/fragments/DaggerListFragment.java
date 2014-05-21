@@ -6,7 +6,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.DialogInterface;
 
-public class DaggerListFragment<T> extends ListFragment
+public class DaggerListFragment extends ListFragment
 {
 	@Override
 	public void onAttach(Activity activity)

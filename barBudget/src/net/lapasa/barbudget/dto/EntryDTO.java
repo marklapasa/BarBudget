@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
+import net.lapasa.barbudget.models.PeriodModel;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
@@ -102,7 +103,7 @@ public class EntryDTO
         String startTimeStr = null;
         if (periodStart != null)
         {
-        	startTimeStr = sdf.format(periodStart.getTime());
+        	startTimeStr = String.valueOf(periodStart.getTime());
         }
         
         	
@@ -110,13 +111,17 @@ public class EntryDTO
         String endTimeStr = null;
         if (periodEnd != null)
         {
-        	endTimeStr = sdf.format(periodEnd.getTime());
+        	endTimeStr = String.valueOf(periodEnd.getTime());
         }
         
         String whereClause = "category = " + category.getId();
         
         if (startTimeStr != null && endTimeStr != null)
         {
+        	if (isSameDay(periodStart, periodEnd))
+        	{
+        		endTimeStr = String.valueOf(periodEnd.getTime() + PeriodModel.DAILY); // Tomorrow
+        	}
 	        whereClause += " AND (timestamp BETWEEN " + startTimeStr + " AND " + endTimeStr + ")";
         }
         else if (startTimeStr == null && endTimeStr != null)
@@ -144,4 +149,14 @@ public class EntryDTO
 
         return entries;
     }
+
+	private boolean isSameDay(Date periodStart, Date periodEnd)
+	{
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(periodStart);
+		cal2.setTime(periodEnd);
+		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);		
+	}
 }

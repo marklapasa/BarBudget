@@ -74,6 +74,8 @@ public class CategoryDTO
                 break;
             case SortRule.SORT_HIGH_TO_LOW:
                 orderBy = "sum DESC";
+            case SortRule.SORT_MOST_FREQUENT:
+//            	order By = "?" -> Number of entry instances for this category, for their period type
                 break;
         }
 

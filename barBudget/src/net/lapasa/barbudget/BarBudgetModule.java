@@ -4,12 +4,14 @@ import javax.inject.Singleton;
 
 import net.lapasa.barbudget.dto.CategoryBudgetDTO;
 import net.lapasa.barbudget.dto.CategoryDTO;
+import net.lapasa.barbudget.dto.CategoryTallyDTO;
 import net.lapasa.barbudget.dto.EntryDTO;
 import net.lapasa.barbudget.fragments.CategoryFormFragment;
 import net.lapasa.barbudget.fragments.CategoryListFragment;
 import net.lapasa.barbudget.fragments.EntryFormFragment;
 import net.lapasa.barbudget.fragments.EntryListFragment;
 import net.lapasa.barbudget.fragments.SetBudgetFragment;
+import net.lapasa.barbudget.fragments.adapters.CategoryListAdapter;
 import test.net.lapasa.barbduget.dto.CategoryDTOTest;
 import dagger.Module;
 import dagger.Provides;
@@ -22,7 +24,9 @@ import dagger.Provides;
 				CategoryFormFragment.class,
 				EntryFormFragment.class,
 				EntryListFragment.class,
-				SetBudgetFragment.class},
+				SetBudgetFragment.class,
+				CategoryListAdapter.class,
+				CategoryTallyDTO.class},
 		library=true)
 public class BarBudgetModule
 {
@@ -46,4 +50,11 @@ public class BarBudgetModule
 	{
 		return new CategoryBudgetDTO();
 	}
+	
+	@Provides
+	@Singleton
+	CategoryTallyDTO provideCategoryTallyDTO(EntryDTO entryDTO)
+	{
+		return new CategoryTallyDTO(entryDTO);
+	}	
 }
