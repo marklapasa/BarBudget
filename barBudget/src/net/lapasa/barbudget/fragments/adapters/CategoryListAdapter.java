@@ -81,7 +81,15 @@ public class CategoryListAdapter extends BaseAdapter
 		barGraph.setLayoutParams(lp);
 		
 		tv = (TextView) v.findViewById(R.id.value_width);
-		tv.append(cat.getSum() + "");
+		if (cat.getSum() > 0)
+		{
+			tv.append(cat.getSum() + "");
+		}
+		else
+		{
+			tv.setText("Add Entry");
+			tv.setVisibility(View.VISIBLE);
+		}
 		
 		return v;
 	}
