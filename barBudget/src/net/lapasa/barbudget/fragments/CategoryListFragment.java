@@ -16,15 +16,11 @@ import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.CategoryBudget;
 import net.lapasa.barbudget.models.CategoryTally;
 import net.lapasa.barbudget.models.Entry;
-import net.lapasa.barbudget.models.PeriodModel;
 import net.lapasa.barbudget.models.SortRule;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +41,7 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 
 	protected static final int ACTION_VIEW_ENTRIES = 0;
 
+	
 	@Inject
 	protected Lazy<CategoryDTO> lazyCategoryDTO;
 
@@ -64,6 +61,8 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 	@Inject
 	protected Lazy<CategoryBudgetDTO> lazyCategoryBudgetDTO;
 
+	private int periodType;
+
 	/**
 	 * Constructor
 	 */
@@ -82,11 +81,6 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 	public void onResume()
 	{
 		super.onResume();
-		Drawable d = new ColorDrawable(Color.BLACK); // Default to black
-		getActivity().getActionBar().setBackgroundDrawable(d);
-		
-		
-		
 		refresh();
 	}
 
@@ -103,8 +97,8 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 			this.categories.addAll(categories);
 
 			/* For each category, get the CategoryTally for target periodType and store it in the Category's Sum*/
-			injectCategoryTallyForPeriod(PeriodModel.RANGE_TODAY);
-			injectCategoryBudgetForPeriod(PeriodModel.RANGE_TODAY);
+			injectCategoryTallyForPeriod(periodType);
+			injectCategoryBudgetForPeriod(periodType);
 			
 		}
 		adapter.notifyDataSetChanged();
@@ -185,7 +179,7 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 				category.setHighestSum(categoryWithHighestTally.getSum());
 			}
 
-			Crouton.makeText(getActivity(), "HIGHEST: " + categoryWithHighestTally.getName() + " @ " + categoryWithHighestTally.getSum(), Style.INFO).show();
+//			Crouton.makeText(getActivity(), "HIGHEST: " + categoryWithHighestTally.getName() + " @ " + categoryWithHighestTally.getSum(), Style.INFO).show();
 		}
 	}
 
@@ -368,5 +362,14 @@ public class CategoryListFragment extends DaggerListFragment implements OnItemLo
 		EntryFormFragment entryFormFrag = EntryFormFragment.create(selectedCategory);
 		
 		((MainActivity)getActivity()).showFragment(entryFormFrag);
+	}
+
+
+
+	public static CategoryListFragment create(int periodType)
+	{
+		CategoryListFragment frag = new CategoryListFragment();
+		frag.periodType = periodType;
+		return frag;
 	}	
 }

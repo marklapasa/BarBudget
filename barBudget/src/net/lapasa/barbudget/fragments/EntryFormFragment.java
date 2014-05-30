@@ -230,7 +230,7 @@ public class EntryFormFragment extends DaggerFragment implements ValidationListe
 		
 		if (existingCategory != null)
 		{
-			amountField.requestFocus();
+//			amountField.requestFocus();
 		}
 	}
 

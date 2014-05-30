@@ -118,10 +118,6 @@ public class EntryDTO
         
         if (startTimeStr != null && endTimeStr != null)
         {
-        	if (isSameDay(periodStart, periodEnd))
-        	{
-        		endTimeStr = String.valueOf(periodEnd.getTime() + PeriodModel.DAILY); // Tomorrow
-        	}
 	        whereClause += " AND (timestamp BETWEEN " + startTimeStr + " AND " + endTimeStr + ")";
         }
         else if (startTimeStr == null && endTimeStr != null)

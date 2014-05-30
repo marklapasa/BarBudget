@@ -33,6 +33,8 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
         /* If there are no categories, display the default fragment, i.e. fragment_no_categories */
         showFragment(new CategoryListFragment());
 //        showFragment(CategoryListFragment.create(PeriodModel.RANGE_TODAY));
+        
+        getActionBar().setSubtitle("SubTitle");
     }
 
 

@@ -2,16 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingBottom="15dp"
+    android:paddingTop="15dp" >
+
+    <!-- Category Name, First inner row -->
 
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
-        android:paddingTop="20dp"
         android:text="Entertainment"
         android:textColor="@android:color/black" />
+
+    <!-- Second inner row -->
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -37,19 +42,13 @@
                 android:id="@+id/value"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:paddingRight="5dp"
-                android:singleLine="true"
-                android:text="$75.00"
-                android:textColor="#FFF"
-                android:textSize="12sp" />
+                android:singleLine="true" />
         </FrameLayout>
     </LinearLayout>
 
-    <!-- Budget -->
+    <!-- Budget, Third inner row -->
 
     <LinearLayout
-        android:id="@+id/budget"
         android:layout_width="fill_parent"
         android:layout_height="3dp"
         android:layout_gravity="center_vertical"
@@ -57,8 +56,14 @@
         android:layout_marginRight="20dp"
         android:background="#CCCCCC"
         android:orientation="horizontal"
-        android:visibility="gone"
-        android:weightSum="100" />
+        android:weightSum="100" >
+
+        <TextView
+            android:id="@+id/budget"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/value_width"

@@ -10,6 +10,7 @@ import net.lapasa.barbudget.models.Category;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -208,6 +210,11 @@ public class CategoryFormFragment extends DaggerFragment implements ValidationLi
 			@Override
 			public void afterTextChanged(Editable s){}
 		});
+		
+		
+		// Open the keyboard so that the user can enter the category quickly
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.showSoftInput(categoryField, InputMethodManager.SHOW_IMPLICIT);
 	}
 
 	public void setColor(int color)

@@ -12,11 +12,8 @@ import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.Entry;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,6 +58,9 @@ public class EntryListFragment extends DaggerListFragment implements OnItemLongC
 		super();
 		setHasOptionsMenu(true);
 		entries = new ArrayList<Entry>();
+		
+		// This is the default adapter - show only the records for today
+		// Assumption: entries collection only represents records querried where date = today
 		adapter = new EntryListAdapter(entries);
 		setListAdapter(adapter);
 	}
@@ -79,8 +79,8 @@ public class EntryListFragment extends DaggerListFragment implements OnItemLongC
 	{
 		super.onAttach(activity);
 		getActivity().setTitle(existingCategory.getName());
-		Drawable d = new ColorDrawable(existingCategory.getColor());
-		getActivity().getActionBar().setBackgroundDrawable(d);
+//		Drawable d = new ColorDrawable(existingCategory.getColor());
+//		getActivity().getActionBar().setBackgroundDrawable(d);
 	}
 
 	/**

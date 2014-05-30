@@ -26,8 +26,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class SetBudgetFragment extends DaggerFragment
 {
 	@Inject
-	Lazy<CategoryBudgetDTO> lazyCategoryBudgetDTO;
-	
+	Lazy<CategoryBudgetDTO> lazyCategoryBudgetDTO;	
 	
 	private Category existingCategory;
 	
@@ -37,12 +36,7 @@ public class SetBudgetFragment extends DaggerFragment
 	private EditText weeklyBudgetEditText;
 	private EditText quarterlyBudgetEditText;
 
-
 	private CategoryBudgetDTO categoryBudgetDTO;
-
-
-
-	
 
 	/**
 	 * Factory method
@@ -72,11 +66,11 @@ public class SetBudgetFragment extends DaggerFragment
 		quarterlyBudgetEditText = (EditText) v.findViewById(R.id.quarterlyBudget);
 		
 		final NumberFormat f = NumberFormat.getCurrencyInstance();
-		configField(f, dailyBudgetEditText, PeriodModel.DAILY);
-		configField(f, monthlyBudgetEditText, PeriodModel.MONTHLY);
-		configField(f, annualBudgetEditText, PeriodModel.ANNUALLY);
-		configField(f, weeklyBudgetEditText, PeriodModel.WEEKLY);
-		configField(f, quarterlyBudgetEditText, PeriodModel.QUARTERLY);
+		configField(f, dailyBudgetEditText, PeriodModel.RANGE_TODAY);
+		configField(f, monthlyBudgetEditText, PeriodModel.RANGE_LAST_30_DAYS);
+		configField(f, annualBudgetEditText, PeriodModel.RANGE_LAST_365_DAYS);
+		configField(f, weeklyBudgetEditText, PeriodModel.RANGE_LAST_7_DAYS);
+		configField(f, quarterlyBudgetEditText, PeriodModel.RANGE_LAST_90_DAYS);
 		
 
 		dailyBudgetEditText.addTextChangedListener(getTextWatcher(dailyBudgetEditText, f, new IRefreshCallback()
@@ -242,35 +236,7 @@ public class SetBudgetFragment extends DaggerFragment
 			field.setText(null);
 		}
 	}
-	
-	
-	/*
-	 * 
-	 * @param period
-	 * @return
-	 
-	private CategoryBudget fetch_DEPRECATED_USE_DTO_INSTEAD(int period)
-	{
-		CategoryBudget targetBudget = null;
-		
-		if (budgets != null)
-		{
-			for (CategoryBudget budget : budgets)
-			{
-				if(budget.getPeriodModel() == period)
-				{
-					return budget;
-				}
-			}
-		}
-		else
-		{
-			targetBudget = null;
-		}
-		
-		return targetBudget;
-	}
-	*/
+
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
@@ -302,23 +268,23 @@ public class SetBudgetFragment extends DaggerFragment
 	private void save()
 	{
 		/* Save Daily */
-		CategoryBudget budget = new CategoryBudget(PeriodModel.DAILY, convert(dailyBudgetEditText.getText().toString()), existingCategory);
+		CategoryBudget budget = new CategoryBudget(PeriodModel.RANGE_TODAY, convert(dailyBudgetEditText.getText().toString()), existingCategory);
 		categoryBudgetDTO.setBudget(budget);
 		
 		/* Save Weekly */
-		budget = new CategoryBudget(PeriodModel.WEEKLY, convert(weeklyBudgetEditText.getText().toString()), existingCategory);
+		budget = new CategoryBudget(PeriodModel.RANGE_LAST_7_DAYS, convert(weeklyBudgetEditText.getText().toString()), existingCategory);
 		categoryBudgetDTO.setBudget(budget);
 		
 		/* Save Monthly */
-		budget = new CategoryBudget(PeriodModel.MONTHLY, convert(monthlyBudgetEditText.getText().toString()), existingCategory);
+		budget = new CategoryBudget(PeriodModel.RANGE_LAST_30_DAYS, convert(monthlyBudgetEditText.getText().toString()), existingCategory);
 		categoryBudgetDTO.setBudget(budget);
 		
 		/* Save Quarterly */
-		budget = new CategoryBudget(PeriodModel.QUARTERLY, convert(quarterlyBudgetEditText.getText().toString()), existingCategory);
+		budget = new CategoryBudget(PeriodModel.RANGE_LAST_90_DAYS, convert(quarterlyBudgetEditText.getText().toString()), existingCategory);
 		categoryBudgetDTO.setBudget(budget);
 		
 		/* Save Annually */
-		budget = new CategoryBudget(PeriodModel.ANNUALLY, convert(annualBudgetEditText.getText().toString()), existingCategory);
+		budget = new CategoryBudget(PeriodModel.RANGE_LAST_365_DAYS, convert(annualBudgetEditText.getText().toString()), existingCategory);
 		categoryBudgetDTO.setBudget(budget);		
 	}
 	

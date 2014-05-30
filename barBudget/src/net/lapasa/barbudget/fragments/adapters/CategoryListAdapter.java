@@ -74,11 +74,20 @@ public class CategoryListAdapter extends BaseAdapter
 		tv = (TextView) v.findViewById(R.id.value);
 		tv.setText(getDebugString(cat));
 		
+		/* Category Tally */
 		View barGraph = v.findViewById(R.id.barGraph);
 		barGraph.setBackgroundColor(cat.getColor());
 		float ratio = (float) (cat.getSum() / cat.getHighestSum());
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
 		barGraph.setLayoutParams(lp);
+		
+		/* Budget */
+		View budgetGraph = v.findViewById(R.id.budget);
+		ratio = (float) (cat.getBudget() / cat.getHighestSum());
+		lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
+		budgetGraph.setLayoutParams(lp);
+		
+		
 		
 		tv = (TextView) v.findViewById(R.id.value_width);
 		if (cat.getSum() > 0)
@@ -90,6 +99,7 @@ public class CategoryListAdapter extends BaseAdapter
 			tv.setText("Add Entry");
 			tv.setVisibility(View.VISIBLE);
 		}
+
 		
 		return v;
 	}

@@ -21,6 +21,7 @@ public class EntryListAdapter extends BaseAdapter
 	private List<Entry> list;
 	private LayoutInflater inflator;
 	private SimpleDateFormat f = new SimpleDateFormat("MM/d");
+	private SimpleDateFormat timeOnlyFormatter = new SimpleDateFormat("h:mm aa");
 
 
 	public EntryListAdapter(List<Entry> list)
@@ -55,13 +56,25 @@ public class EntryListAdapter extends BaseAdapter
 		View v = convertView;
 		if (v == null)
 		{
-			v = inflator.inflate(R.layout.default_category_row, null);
+			v = inflator.inflate(R.layout.row_entry_daily, null);
 		}
 		
+		// Data
 		Entry entry = list.get(position);
-		TextView tv = (TextView) v.findViewById(R.id.name);
-		tv.setText(f.format(entry.getTimestamp()));
 		
+		
+		// Timestamp
+		TextView tv = (TextView) v.findViewById(R.id.time);
+		String timeOnlyStr = timeOnlyFormatter.format(entry.getTimestamp());
+		tv.setText(timeOnlyStr);
+		
+		if (entry.getMemo() != null && !entry.getMemo().isEmpty())
+		{
+			tv = (TextView) v.findViewById(R.id.memo);
+			tv.setText(entry.getMemo());
+		}
+		
+		// Dollar Amount
 		tv = (TextView) v.findViewById(R.id.value);
 		
 		CharSequence value = String.format("$%.2f", entry.getValue());

@@ -5,11 +5,11 @@ import java.util.Date;
 
 public class PeriodModel
 {
-	public static final int DAILY = 86400000;
-	public static final int WEEKLY = DAILY * 7;
-	public static final int MONTHLY = DAILY * 30;
-	public static final int QUARTERLY = DAILY * 90;
-	public static final int ANNUALLY = DAILY * 356;
+	private static final int _24HOURS = 86400000;
+	private static final int _7DAYS = _24HOURS * 7;
+	private static final int _MONTH = _24HOURS * 30;
+	private static final int _QUARTER = _24HOURS * 90;
+	private static final int _ANNUALLY = _24HOURS * 356;
 
 	public static final int RANGE_TODAY = 0;
 	public static final int RANGE_LAST_7_DAYS = 1;
@@ -139,25 +139,25 @@ public class PeriodModel
 	{
 		long diff = periodEnd.getTimeInMillis() - periodStart.getTimeInMillis();
 
-		if (diff < DAILY)
+		if (diff < _24HOURS)
 		{
-			this.type = DAILY;
+			this.type = _24HOURS;
 		}
-		else if (diff < WEEKLY)
+		else if (diff < _7DAYS)
 		{
-			this.type = WEEKLY;
+			this.type = _7DAYS;
 		}
-		else if (diff < MONTHLY)
+		else if (diff < _MONTH)
 		{
-			this.type = MONTHLY;
+			this.type = _MONTH;
 		}
-		else if (diff < QUARTERLY)
+		else if (diff < _QUARTER)
 		{
-			this.type = QUARTERLY;
+			this.type = _QUARTER;
 		}
 		else
 		{
-			this.type = ANNUALLY;
+			this.type = _ANNUALLY;
 		}
 	}
 
