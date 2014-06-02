@@ -1,7 +1,5 @@
 package net.lapasa.barbudget;
 
-import net.lapasa.barbudget.fragments.CategoryListFragment;
-import net.lapasa.barbudget.models.PeriodModel;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -19,6 +17,14 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
 
 	private ViewPager viewPager = null;
 	
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.test_layout);
+	}
+	
+	/*
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -30,12 +36,13 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
 //        viewPager = (ViewPager) findViewById(R.id.root)
         
         
-        /* If there are no categories, display the default fragment, i.e. fragment_no_categories */
+        // If there are no categories, display the default fragment, i.e. fragment_no_categories
         showFragment(new CategoryListFragment());
 //        showFragment(CategoryListFragment.create(PeriodModel.RANGE_TODAY));
         
         getActionBar().setSubtitle("SubTitle");
     }
+    */
 
 
 
