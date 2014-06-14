@@ -21,8 +21,9 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.test_layout);
+		setContentView(R.layout.test_layout2);
 	}
+	
 	
 	/*
     @Override
