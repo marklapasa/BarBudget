@@ -21,6 +21,7 @@ import android.widget.TextView;
 public class BarGraphView extends RelativeLayout
 {
 	private static final String TAG = BarGraphView.class.getName();
+	private static final int VALUE_BAR_ID = 2014;
 	protected RelativeLayout emptyBar;
 	protected RelativeLayout valueBar;
 	protected TextView valueTextView;
@@ -36,7 +37,6 @@ public class BarGraphView extends RelativeLayout
 	private int containerWidth;
 	private TextView innerTextView;
 	private TextView outerTextView;
-	private int containerHeight;
 	private int valueBarWidth;
 	private int innerTextViewWidth;
 	private int innerTextViewHeight;
@@ -66,7 +66,10 @@ public class BarGraphView extends RelativeLayout
 		else
 		{
 			setBarGraph();
+			setOuterTextView();
+			
 			this.addView(valueBar);
+			this.addView(outerTextView);
 		}
 
 	}
@@ -92,40 +95,23 @@ public class BarGraphView extends RelativeLayout
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
 		containerWidth = MeasureSpec.getSize(widthMeasureSpec);
-		containerHeight = MeasureSpec.getSize(heightMeasureSpec);
-
-		// Define width of valueBar as ratio of containerWidth
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(getBarGraphWidth(), containerHeight);
-		// valueBar.setLayoutParams(lp);
-
-		setMeasuredDimension(containerWidth, containerHeight);
+		
+		int measuredHeight = getMeasuredHeight();
+		setMeasuredDimension(containerWidth, measuredHeight);
 
 	}
 
-	/*
-	 * @Override protected void onMeasure(int widthMeasureSpec, int
-	 * heightMeasureSpec) { super.onMeasure(widthMeasureSpec,
-	 * heightMeasureSpec); containerWidth =
-	 * MeasureSpec.getSize(widthMeasureSpec); int parentHeight =
-	 * MeasureSpec.getSize(heightMeasureSpec);
-	 * 
-	 * // // 1) Get container's dimensions // super.onMeasure(widthMeasureSpec,
-	 * heightMeasureSpec); // // // 2) Calculate this components drawable area
-	 * // int measuredWidth = widthMeasureSpec; // maxWidth = widthMeasureSpec;
-	 * height = 10; // // // 3) Finally, make call to setMesauredDimensions //
-	 * setMeasuredDimension(measuredWidth, height);
-	 * 
-	 * // this.removeAllViews();
-	 * 
-	 * // setMeasuredDimension(containerWidth, getMeasuredHeight());
-	 * setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight()); }
-	 */
 
 	@Override
 	protected void dispatchDraw(Canvas canvas)
 	{
 		super.dispatchDraw(canvas);
 
+		if (valueBar == null)
+		{
+			return;
+		}
+		
 		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) valueBar.getLayoutParams();
 		valueBarWidth = (lp.width > -1) ? lp.width : valueBarWidth;
 		innerTextViewWidth = (innerTextViewWidth == 0) ? innerTextView.getMeasuredWidth() : innerTextViewWidth;
@@ -143,7 +129,6 @@ public class BarGraphView extends RelativeLayout
 		}
 
 		requestLayout();
-
 	}
 
 	/**
@@ -155,12 +140,12 @@ public class BarGraphView extends RelativeLayout
 	private void setBarGraph()
 	{
 		valueBar = new RelativeLayout(getContext());
+		valueBar.setId(VALUE_BAR_ID);
 
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		valueBar.setLayoutParams(rlp);
 		setInnerTextView();
 
-		setOuterTextView();
 		valueBar.addView(innerTextView);
 		valueBar.setBackgroundColor(color);
 
@@ -179,9 +164,7 @@ public class BarGraphView extends RelativeLayout
 	private void setOuterTextView()
 	{
 		outerTextView = new TextView(getContext());
-		outerTextView.setText("Outer");
-		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		rlp.addRule(RelativeLayout.ALIGN_RIGHT, valueBar.getId());
+		outerTextView.setText("Outer Outer");
 	}
 
 	private int getBarGraphWidth()
