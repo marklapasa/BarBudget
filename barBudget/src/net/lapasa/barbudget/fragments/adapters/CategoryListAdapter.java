@@ -69,10 +69,9 @@ public class CategoryListAdapter extends BaseAdapter
 		Category cat = list.get(position);
 		TextView tv = (TextView) v.findViewById(R.id.name);
 		tv.setText(cat.getName());
-//		v.setBackgroundColor(cat.getColor());
 		
 		tv = (TextView) v.findViewById(R.id.value);
-		tv.setText(getDebugString(cat));
+		tv.setText(getFormattedValue(cat));
 		
 		/* Category Tally */
 		View barGraph = v.findViewById(R.id.barGraph);
@@ -104,7 +103,7 @@ public class CategoryListAdapter extends BaseAdapter
 		return v;
 	}
 
-	private String getDebugString(Category cat)
+	private String getFormattedValue(Category cat)
 	{
 		CategoryTallyDTO dto = lazyCategoryTallyDTO.get();
 		SparseArray<CategoryTally> tallies = dto.getTallyForCategory(cat);

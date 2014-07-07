@@ -1,5 +1,8 @@
 package net.lapasa.barbudget.views;
 
+import java.text.NumberFormat;
+import java.util.Currency;
+
 import net.lapasa.barbudget.R;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -23,6 +26,10 @@ public class BarGraphView extends RelativeLayout
 	private static final String TAG = BarGraphView.class.getName();
 	private static final int VALUE_BAR_ID = 2014;
 	protected RelativeLayout emptyBar;
+	
+	/**
+	 * This inner  viewgroup is a visual bargraph representation of a value
+	 */
 	protected RelativeLayout valueBar;
 	protected TextView valueTextView;
 	protected TextView smValueTextView;
@@ -35,7 +42,15 @@ public class BarGraphView extends RelativeLayout
 	public int maxWidth;
 	public int barGraphWidth = 0;
 	private int containerWidth;
+	
+	/**
+	 * This textview is used to display the numerical value of the bar graph from within the bar graph
+	 */
 	private TextView innerTextView;
+	
+	/**
+	 * This textview is used to display the numerical value of the bar graph from outside the bar graph; When there is not enough space internally
+	 */
 	private TextView outerTextView;
 	private int valueBarWidth;
 	private int innerTextViewWidth;
@@ -44,7 +59,6 @@ public class BarGraphView extends RelativeLayout
 	public BarGraphView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
-		setWillNotDraw(false);
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BarGraphView, 0, 0);
 
 		try
@@ -65,11 +79,15 @@ public class BarGraphView extends RelativeLayout
 		}
 		else
 		{
-			setBarGraph();
-			setOuterTextView();
+			initBarGraph();
+			initOuterTextView();
 			
 			this.addView(valueBar);
 			this.addView(outerTextView);
+			
+			RelativeLayout.LayoutParams outerLayoutParams = (RelativeLayout.LayoutParams) outerTextView.getLayoutParams();
+			outerLayoutParams.addRule(RelativeLayout.RIGHT_OF, valueBar.getId());
+			
 		}
 
 	}
@@ -89,6 +107,10 @@ public class BarGraphView extends RelativeLayout
 		return emptyBar;
 	}
 
+	
+	/**
+	 * Derive the actual width of the parent view 
+	 */
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
@@ -98,10 +120,12 @@ public class BarGraphView extends RelativeLayout
 		
 		int measuredHeight = getMeasuredHeight();
 		setMeasuredDimension(containerWidth, measuredHeight);
-
 	}
 
 
+	/**
+	 * Evaluate whether to display the label inside or outside the bar graph
+	 */
 	@Override
 	protected void dispatchDraw(Canvas canvas)
 	{
@@ -122,10 +146,16 @@ public class BarGraphView extends RelativeLayout
 		lp.width = getBarGraphWidth();
 		lp.height = innerTextViewHeight;
 
-		if (valueBarWidth > 0 && innerTextViewWidth > valueBarWidth)
+		if (innerTextViewWidth > lp.width)
 		{
 			// Hide the inner view, show the outer view
-			innerTextView.setVisibility(View.INVISIBLE);
+			innerTextView.setVisibility(View.GONE);
+			outerTextView.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			innerTextView.setVisibility(View.VISIBLE);
+			outerTextView.setVisibility(View.GONE);
 		}
 
 		requestLayout();
@@ -137,34 +167,40 @@ public class BarGraphView extends RelativeLayout
 	 * 
 	 * @return
 	 */
-	private void setBarGraph()
+	private void initBarGraph()
 	{
 		valueBar = new RelativeLayout(getContext());
 		valueBar.setId(VALUE_BAR_ID);
 
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		valueBar.setLayoutParams(rlp);
-		setInnerTextView();
-
+		
+		// By default, show the value internally anyways
+		initInnerTextView();
 		valueBar.addView(innerTextView);
 		valueBar.setBackgroundColor(color);
-
 	}
 
-	private void setInnerTextView()
+	private void initInnerTextView()
 	{
 		innerTextView = new TextView(getContext());
-		innerTextView.setText("Inner Inner");
+		innerTextView.setText(getFormattedValue());
 		innerTextView.setBackgroundColor(0xff0000);
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		innerTextView.setLayoutParams(rlp);
+		innerTextView.setLayoutParams(rlp);		
 	}
 
-	private void setOuterTextView()
+	private String getFormattedValue()
+	{
+		NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+		return numberFormat.format(numerator);
+	}
+
+	private void initOuterTextView()
 	{
 		outerTextView = new TextView(getContext());
-		outerTextView.setText("Outer Outer");
+		outerTextView.setText(getFormattedValue());
 	}
 
 	private int getBarGraphWidth()
@@ -183,5 +219,4 @@ public class BarGraphView extends RelativeLayout
 		this.barGraphWidth = (int) (maxWidth / ratio);
 		requestLayout();
 	}
-
 }

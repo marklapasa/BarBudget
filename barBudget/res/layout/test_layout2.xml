@@ -10,9 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="15dp"
-        android:background="#f066f0"
         lapasa:denominator="10"
-        lapasa:numerator="1"
-        lapasa:color="#00ff00"/>
+        lapasa:numerator="5"
+        lapasa:color="#00ff00" />
 
 </LinearLayout>

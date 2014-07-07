@@ -1,5 +1,6 @@
 package net.lapasa.barbudget;
 
+import net.lapasa.barbudget.fragments.CategoryListFragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -17,15 +18,17 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
 
 	private ViewPager viewPager = null;
 	
+	/*
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.test_layout2);
 	}
+	*/
 	
 	
-	/*
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -43,9 +46,7 @@ public class MainActivity extends Activity implements OnBackStackChangedListener
         
         getActionBar().setSubtitle("SubTitle");
     }
-    */
-
-
+    
 
 
 
