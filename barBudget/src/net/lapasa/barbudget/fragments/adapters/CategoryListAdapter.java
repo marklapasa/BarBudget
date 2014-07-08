@@ -1,6 +1,5 @@
 package net.lapasa.barbudget.fragments.adapters;
 
-import java.text.NumberFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,6 +9,7 @@ import net.lapasa.barbudget.R;
 import net.lapasa.barbudget.dto.CategoryTallyDTO;
 import net.lapasa.barbudget.models.Category;
 import net.lapasa.barbudget.models.CategoryTally;
+import net.lapasa.barbudget.views.BarGraphView;
 import android.content.Context;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -34,9 +34,7 @@ public class CategoryListAdapter extends BaseAdapter
 		this.list = list;
 		Context applicationContext = BarBudgetApplication.getSugarContext().getApplicationContext();
 		inflator = (LayoutInflater) applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
 		((BarBudgetApplication) applicationContext).inject(this);		
-
 	}
 
 	@Override
@@ -66,74 +64,31 @@ public class CategoryListAdapter extends BaseAdapter
 			v = inflator.inflate(R.layout.category_row, null);
 		}
 		
+		// Set category
 		Category cat = list.get(position);
 		TextView tv = (TextView) v.findViewById(R.id.name);
 		tv.setText(cat.getName());
 		
-		tv = (TextView) v.findViewById(R.id.value);
-		tv.setText(getFormattedValue(cat));
-		
-		/* Category Tally */
-		View barGraph = v.findViewById(R.id.barGraph);
-		barGraph.setBackgroundColor(cat.getColor());
-		float ratio = (float) (cat.getSum() / cat.getHighestSum());
-		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
-		barGraph.setLayoutParams(lp);
-		
-		/* Budget */
+		// Set BarGraph
+		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.barGraph);
+		initBarGraphView(cat, bgView);
+				
+		/* Budget 
 		View budgetGraph = v.findViewById(R.id.budget);
-		ratio = (float) (cat.getBudget() / cat.getHighestSum());
-		lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
+		float ratio = (float) (cat.getBudget() / cat.getHighestSum());
+		android.widget.LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
 		budgetGraph.setLayoutParams(lp);
-		
-		
-		
-		tv = (TextView) v.findViewById(R.id.value_width);
-		if (cat.getSum() > 0)
-		{
-			tv.append(cat.getSum() + "");
-		}
-		else
-		{
-			tv.setText("Add Entry");
-			tv.setVisibility(View.VISIBLE);
-		}
-
-		
+		*/
 		return v;
 	}
 
-	private String getFormattedValue(Category cat)
+	private void initBarGraphView(Category cat, BarGraphView bgView)
 	{
-		CategoryTallyDTO dto = lazyCategoryTallyDTO.get();
-		SparseArray<CategoryTally> tallies = dto.getTallyForCategory(cat);
-		
-		
-		NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
-		String label = "";
-		if (tallies != null)
-		{
-			CategoryTally obj = tallies.get(0);
-			if (obj != null)
-			{
-				label += numberFormat.format(obj.getValue());
-			}
-			else
-			{
-				label += numberFormat.format(0);
-			}
-		}
-		
-		/*
-		int key = 0;
-		for(int i = 0; i < tallies.size(); i++) 
-		{
-		   key = tallies.keyAt(i);
-		   CategoryTally obj = tallies.get(key);
-		   label += key + "-" + obj.getValue() + "\n"; 
-		}
-		*/
-		return label;
+		bgView.setNumerator(cat.getSum());
+		bgView.setDenominator(cat.getHighestSum());
+		bgView.setColor(cat.getColor());
+		bgView.refresh();
 	}
+
 
 }

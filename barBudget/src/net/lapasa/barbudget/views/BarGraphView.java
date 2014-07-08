@@ -1,12 +1,13 @@
 package net.lapasa.barbudget.views;
 
 import java.text.NumberFormat;
-import java.util.Currency;
 
 import net.lapasa.barbudget.R;
+import net.lapasa.barbudget.Util;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -28,14 +29,14 @@ public class BarGraphView extends RelativeLayout
 	protected RelativeLayout emptyBar;
 	
 	/**
-	 * This inner  viewgroup is a visual bargraph representation of a value
+	 * This inner viewgroup is a visual bargraph representation of a value
 	 */
 	protected RelativeLayout valueBar;
 	protected TextView valueTextView;
 	protected TextView smValueTextView;
-	public double numerator;
-	public double denominator;
-	public int color;
+	private double numerator;
+	private double denominator;
+	private int color;
 	private double ratio;
 	public int height;
 
@@ -61,18 +62,28 @@ public class BarGraphView extends RelativeLayout
 		super(context, attrs);
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BarGraphView, 0, 0);
 
+		/**
+		 * This will read values defined as properties in the xml version of this class
+		 */
 		try
 		{
-			this.color = a.getColor(R.styleable.BarGraphView_color, 0x000000);
-			this.numerator = a.getInteger(R.styleable.BarGraphView_numerator, 25);
-			this.denominator = a.getInteger(R.styleable.BarGraphView_denominator, 100);
-			this.ratio = numerator / denominator;
+			this.setColor(a.getColor(R.styleable.BarGraphView_color, 0x000000));
+			this.setNumerator(a.getInteger(R.styleable.BarGraphView_numerator, 25));
+			this.setDenominator(a.getInteger(R.styleable.BarGraphView_denominator, 100));
 		}
 		finally
 		{
 			a.recycle();
 		}
+	}
 
+	private void composeBarGraph()
+	{
+		this.removeAllViews();
+		valueBar = null;
+		innerTextView = null;
+		outerTextView = null;
+		
 		if (ratio == 0 || (ratio == Double.NaN))
 		{
 			this.addView(getEmptyBar());
@@ -86,10 +97,8 @@ public class BarGraphView extends RelativeLayout
 			this.addView(outerTextView);
 			
 			RelativeLayout.LayoutParams outerLayoutParams = (RelativeLayout.LayoutParams) outerTextView.getLayoutParams();
-			outerLayoutParams.addRule(RelativeLayout.RIGHT_OF, valueBar.getId());
-			
+			outerLayoutParams.addRule(RelativeLayout.RIGHT_OF, valueBar.getId());		
 		}
-
 	}
 
 	/**
@@ -121,7 +130,7 @@ public class BarGraphView extends RelativeLayout
 		int measuredHeight = getMeasuredHeight();
 		setMeasuredDimension(containerWidth, measuredHeight);
 	}
-
+	
 
 	/**
 	 * Evaluate whether to display the label inside or outside the bar graph
@@ -130,7 +139,8 @@ public class BarGraphView extends RelativeLayout
 	protected void dispatchDraw(Canvas canvas)
 	{
 		super.dispatchDraw(canvas);
-
+		
+		
 		if (valueBar == null)
 		{
 			return;
@@ -178,28 +188,33 @@ public class BarGraphView extends RelativeLayout
 		// By default, show the value internally anyways
 		initInnerTextView();
 		valueBar.addView(innerTextView);
-		valueBar.setBackgroundColor(color);
+		valueBar.setBackgroundColor(getColor());
 	}
 
 	private void initInnerTextView()
 	{
-		innerTextView = new TextView(getContext());
+		Color c = new Color();
+		boolean isDarkColor = Util.isDarkColor(c.red(getColor()), c.blue(getColor()), c.green(getColor()));
+		
+		int textViewId = isDarkColor ? R.layout.light_text_view : R.layout.dark_text_view;
+		
+		innerTextView = (TextView) inflate(getContext(), textViewId, null);// new TextView(getContext(), null, R.style.OuterTextView);
 		innerTextView.setText(getFormattedValue());
-		innerTextView.setBackgroundColor(0xff0000);
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		innerTextView.setLayoutParams(rlp);		
+		innerTextView.setLayoutParams(rlp);
+		innerTextView.invalidate();
 	}
 
 	private String getFormattedValue()
 	{
 		NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
-		return numberFormat.format(numerator);
+		return numberFormat.format(getNumerator());
 	}
 
 	private void initOuterTextView()
 	{
-		outerTextView = new TextView(getContext());
+		outerTextView = (TextView) inflate(getContext(), R.layout.dark_text_view, null);
 		outerTextView.setText(getFormattedValue());
 	}
 
@@ -219,4 +234,55 @@ public class BarGraphView extends RelativeLayout
 		this.barGraphWidth = (int) (maxWidth / ratio);
 		requestLayout();
 	}
+
+	public double getNumerator()
+	{
+		return numerator;
+	}
+
+	public void setNumerator(double numerator)
+	{
+		this.numerator = numerator;
+		refreshRatio();
+	}
+
+	public double getDenominator()
+	{
+		return denominator;
+	}
+
+	public void setDenominator(double denominator)
+	{
+		this.denominator = denominator;
+		refreshRatio();
+	}
+
+	private void refreshRatio()
+	{
+		if (getNumerator() > -1 && getDenominator() > 0)
+		{
+			this.ratio = getNumerator() / getDenominator();
+		}
+		
+	}
+
+	public int getColor()
+	{
+		return color;
+	}
+
+	public void setColor(int color)
+	{
+		this.color = color;
+	}
+	
+	
+	public void refresh()
+	{		
+		composeBarGraph();
+		invalidate();
+	}
+	
+	
+	
 }
