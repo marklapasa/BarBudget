@@ -70,23 +70,24 @@ public class CategoryListAdapter extends BaseAdapter
 		tv.setText(cat.getName());
 		
 		// Set BarGraph
-		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.barGraph);
-		initBarGraphView(cat, bgView);
-				
-		/* Budget 
-		View budgetGraph = v.findViewById(R.id.budget);
-		float ratio = (float) (cat.getBudget() / cat.getHighestSum());
-		android.widget.LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, ratio);
-		budgetGraph.setLayoutParams(lp);
-		*/
+//		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.barGraph);
+//		initBarGraphView(cat.getSum(), cat.getHighestSum(), cat.getColor(), bgView);
+		
+		// Set Budget
+		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.budgetBarGraph);
+//		initBarGraphView(cat.getBudget(), cat.getHighestSum(), 0xCCCCCC, bgView);
+		initBarGraphView(0, 0, 0xCCCCCC, bgView);
+		
+		
 		return v;
 	}
 
-	private void initBarGraphView(Category cat, BarGraphView bgView)
+
+	private void initBarGraphView(double numerator, double denominator, int color, BarGraphView bgView)
 	{
-		bgView.setNumerator(cat.getSum());
-		bgView.setDenominator(cat.getHighestSum());
-		bgView.setColor(cat.getColor());
+		bgView.setNumerator(numerator);
+		bgView.setDenominator(denominator);
+		bgView.setColor(color);
 		bgView.refresh();
 	}
 

@@ -1,13 +1,9 @@
 package net.lapasa.barbudget.views;
 
-import java.text.NumberFormat;
-
 import net.lapasa.barbudget.R;
-import net.lapasa.barbudget.Util;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -32,42 +28,31 @@ public class BarGraphView extends RelativeLayout
 	 * This inner viewgroup is a visual bargraph representation of a value
 	 */
 	protected RelativeLayout valueBar;
-	protected TextView valueTextView;
-	protected TextView smValueTextView;
 	private double numerator;
 	private double denominator;
 	private int color;
-	private double ratio;
+	protected double ratio;
 	public int height;
 
 	public int maxWidth;
 	public int barGraphWidth = 0;
 	private int containerWidth;
 	
-	/**
-	 * This textview is used to display the numerical value of the bar graph from within the bar graph
-	 */
-	private TextView innerTextView;
-	
-	/**
-	 * This textview is used to display the numerical value of the bar graph from outside the bar graph; When there is not enough space internally
-	 */
-	private TextView outerTextView;
-	private int valueBarWidth;
-	private int innerTextViewWidth;
-	private int innerTextViewHeight;
+	protected int valueBarWidth;
+	protected LayoutParams valueBarLayoutParams;
 
 	public BarGraphView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BarGraphView, 0, 0);
 
+		
 		/**
 		 * This will read values defined as properties in the xml version of this class
 		 */
 		try
 		{
-			this.setColor(a.getColor(R.styleable.BarGraphView_color, 0x000000));
+			this.setColor(a.getColor(R.styleable.BarGraphView_color, 0xCCCCCC));
 			this.setNumerator(a.getInteger(R.styleable.BarGraphView_numerator, 25));
 			this.setDenominator(a.getInteger(R.styleable.BarGraphView_denominator, 100));
 		}
@@ -76,29 +61,27 @@ public class BarGraphView extends RelativeLayout
 			a.recycle();
 		}
 	}
-
-	private void composeBarGraph()
+	
+	protected void reset()
 	{
 		this.removeAllViews();
-		valueBar = null;
-		innerTextView = null;
-		outerTextView = null;
+		valueBar = null;		
+	}
+
+	protected void composeBarGraph()
+	{
+		reset();
 		
 		if (ratio == 0 || (ratio == Double.NaN))
 		{
-			this.addView(getEmptyBar());
+			valueBar = getEmptyBar();
 		}
 		else
 		{
 			initBarGraph();
-			initOuterTextView();
-			
-			this.addView(valueBar);
-			this.addView(outerTextView);
-			
-			RelativeLayout.LayoutParams outerLayoutParams = (RelativeLayout.LayoutParams) outerTextView.getLayoutParams();
-			outerLayoutParams.addRule(RelativeLayout.RIGHT_OF, valueBar.getId());		
 		}
+		
+		this.addView(valueBar);
 	}
 
 	/**
@@ -107,7 +90,7 @@ public class BarGraphView extends RelativeLayout
 	 * 
 	 * @return
 	 */
-	private View getEmptyBar()
+	protected RelativeLayout getEmptyBar()
 	{
 		TextView tv = new TextView(getContext());
 		tv.setText("Tap To Enter A Value");
@@ -132,44 +115,6 @@ public class BarGraphView extends RelativeLayout
 	}
 	
 
-	/**
-	 * Evaluate whether to display the label inside or outside the bar graph
-	 */
-	@Override
-	protected void dispatchDraw(Canvas canvas)
-	{
-		super.dispatchDraw(canvas);
-		
-		
-		if (valueBar == null)
-		{
-			return;
-		}
-		
-		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) valueBar.getLayoutParams();
-		valueBarWidth = (lp.width > -1) ? lp.width : valueBarWidth;
-		innerTextViewWidth = (innerTextViewWidth == 0) ? innerTextView.getMeasuredWidth() : innerTextViewWidth;
-		innerTextViewHeight = (innerTextViewHeight == 0) ? innerTextView.getMeasuredHeight() : innerTextViewHeight;
-
-		Log.d(TAG, "inner3: " + innerTextViewWidth + ", valueBar: " + valueBarWidth);
-
-		lp.width = getBarGraphWidth();
-		lp.height = innerTextViewHeight;
-
-		if (innerTextViewWidth > lp.width)
-		{
-			// Hide the inner view, show the outer view
-			innerTextView.setVisibility(View.GONE);
-			outerTextView.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			innerTextView.setVisibility(View.VISIBLE);
-			outerTextView.setVisibility(View.GONE);
-		}
-
-		requestLayout();
-	}
 
 	/**
 	 * If the TextView could be rendered from within the valueBar, then display
@@ -177,7 +122,7 @@ public class BarGraphView extends RelativeLayout
 	 * 
 	 * @return
 	 */
-	private void initBarGraph()
+	protected void initBarGraph()
 	{
 		valueBar = new RelativeLayout(getContext());
 		valueBar.setId(VALUE_BAR_ID);
@@ -185,40 +130,21 @@ public class BarGraphView extends RelativeLayout
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		valueBar.setLayoutParams(rlp);
 		
-		// By default, show the value internally anyways
-		initInnerTextView();
-		valueBar.addView(innerTextView);
 		valueBar.setBackgroundColor(getColor());
+
+		if (isRootGraph())
+		{
+			TextView tv = new TextView(getContext());
+			tv.setText("Hi");
+			valueBar.addView(tv);
+		}
 	}
 
-	private void initInnerTextView()
-	{
-		Color c = new Color();
-		boolean isDarkColor = Util.isDarkColor(c.red(getColor()), c.blue(getColor()), c.green(getColor()));
-		
-		int textViewId = isDarkColor ? R.layout.light_text_view : R.layout.dark_text_view;
-		
-		innerTextView = (TextView) inflate(getContext(), textViewId, null);// new TextView(getContext(), null, R.style.OuterTextView);
-		innerTextView.setText(getFormattedValue());
-		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		innerTextView.setLayoutParams(rlp);
-		innerTextView.invalidate();
-	}
 
-	private String getFormattedValue()
-	{
-		NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
-		return numberFormat.format(getNumerator());
-	}
 
-	private void initOuterTextView()
-	{
-		outerTextView = (TextView) inflate(getContext(), R.layout.dark_text_view, null);
-		outerTextView.setText(getFormattedValue());
-	}
+	
 
-	private int getBarGraphWidth()
+	protected int getBarGraphWidth()
 	{
 		return (int) (containerWidth * ratio);
 	}
@@ -283,6 +209,24 @@ public class BarGraphView extends RelativeLayout
 		invalidate();
 	}
 	
+	@Override
+	protected void dispatchDraw(Canvas canvas)
+	{
+		super.dispatchDraw(canvas);
+		valueBarLayoutParams = (RelativeLayout.LayoutParams) valueBar.getLayoutParams();
+		valueBarWidth = (valueBarLayoutParams.width > -1) ? valueBarLayoutParams.width : valueBarWidth;
+		valueBarLayoutParams.width = getBarGraphWidth() > 0 ? getBarGraphWidth() : 400;
+		valueBarLayoutParams.height = 30;
+		Log.d(TAG, "valueBar " + valueBarLayoutParams.width + " x " + valueBarLayoutParams.height);
+		if (isRootGraph())
+		{
+			Log.d(TAG, "dispatchDraw()");
+			requestLayout();
+		}
+	}
 	
-	
+	private boolean isRootGraph()
+	{
+		return this.getClass() == BarGraphView.class;
+	}
 }
