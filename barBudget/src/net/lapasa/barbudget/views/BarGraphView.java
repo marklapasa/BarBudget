@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -46,6 +45,7 @@ public class BarGraphView extends RelativeLayout
 		super(context, attrs);
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BarGraphView, 0, 0);
 
+		setWillNotDraw(false);
 		
 		/**
 		 * This will read values defined as properties in the xml version of this class
@@ -124,18 +124,18 @@ public class BarGraphView extends RelativeLayout
 	 */
 	protected void initBarGraph()
 	{
-		valueBar = new RelativeLayout(getContext());
+		valueBar = (RelativeLayout) inflate(getContext(), R.layout.grey_budget_bar, null);//new RelativeLayout(getContext());
 		valueBar.setId(VALUE_BAR_ID);
-
+		valueBar.setBackgroundColor(getColor());
 		RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		valueBar.setLayoutParams(rlp);
 		
-		valueBar.setBackgroundColor(getColor());
-
+		
+		// HACK!
 		if (isRootGraph())
 		{
 			TextView tv = new TextView(getContext());
-			tv.setText("Hi");
+			tv.setText("Testing");
 			valueBar.addView(tv);
 		}
 	}
@@ -213,10 +213,15 @@ public class BarGraphView extends RelativeLayout
 	protected void dispatchDraw(Canvas canvas)
 	{
 		super.dispatchDraw(canvas);
+		
+		if (valueBar == null)
+		{
+			return;
+		}
 		valueBarLayoutParams = (RelativeLayout.LayoutParams) valueBar.getLayoutParams();
 		valueBarWidth = (valueBarLayoutParams.width > -1) ? valueBarLayoutParams.width : valueBarWidth;
-		valueBarLayoutParams.width = getBarGraphWidth() > 0 ? getBarGraphWidth() : 400;
-		valueBarLayoutParams.height = 30;
+		valueBarLayoutParams.width = getBarGraphWidth() > 0 ? getBarGraphWidth() : valueBarLayoutParams.width;
+		valueBarLayoutParams.height = getMeasuredHeight();
 		Log.d(TAG, "valueBar " + valueBarLayoutParams.width + " x " + valueBarLayoutParams.height);
 		if (isRootGraph())
 		{

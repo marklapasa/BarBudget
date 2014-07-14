@@ -8,16 +8,13 @@ import net.lapasa.barbudget.BarBudgetApplication;
 import net.lapasa.barbudget.R;
 import net.lapasa.barbudget.dto.CategoryTallyDTO;
 import net.lapasa.barbudget.models.Category;
-import net.lapasa.barbudget.models.CategoryTally;
 import net.lapasa.barbudget.views.BarGraphView;
+import net.lapasa.barbudget.views.BudgetBarGraph;
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import dagger.Lazy;
 
@@ -70,15 +67,15 @@ public class CategoryListAdapter extends BaseAdapter
 		tv.setText(cat.getName());
 		
 		// Set BarGraph
-//		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.barGraph);
-//		initBarGraphView(cat.getSum(), cat.getHighestSum(), cat.getColor(), bgView);
+		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.barGraph);
+		initBarGraphView(cat.getSum(), cat.getHighestSum(), cat.getColor(), bgView);
 		
 		// Set Budget
-		BarGraphView bgView = (BarGraphView) v.findViewById(R.id.budgetBarGraph);
-//		initBarGraphView(cat.getBudget(), cat.getHighestSum(), 0xCCCCCC, bgView);
-		initBarGraphView(0, 0, 0xCCCCCC, bgView);
-		
-		
+		BudgetBarGraph budgetBarGraph = (BudgetBarGraph) v.findViewById(R.id.budgetBarGraph);
+		budgetBarGraph.setDenominator(cat.getHighestSum());
+		budgetBarGraph.setNumerator(cat.getBudget());
+		budgetBarGraph.setColor(0xFFCCCCCC);
+		budgetBarGraph.refresh();
 		return v;
 	}
 

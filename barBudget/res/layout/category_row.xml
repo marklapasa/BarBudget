@@ -16,42 +16,22 @@
         android:paddingLeft="20dp"
         android:textColor="@android:color/black" />
 
-    <!-- Second inner row 
-    
+    <!-- Second inner row -->
+
     <net.lapasa.barbudget.views.LabeledBarGraphView
         android:id="@+id/barGraph"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="20dp" />
-    --> 
 
     <!-- Budget, Third inner row -->
-	<net.lapasa.barbudget.views.BarGraphView
+
+    <net.lapasa.barbudget.views.BudgetBarGraph
         android:id="@+id/budgetBarGraph"
         android:layout_width="fill_parent"
-        android:layout_height="3dp"
+        android:layout_height="5dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"
-        lapasa:color="#CCCCCC"/>
-
-	<!-- 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="3dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"
-        android:background="#CCCCCC"
-        android:orientation="horizontal"
-        android:weightSum="100">
-
-        <TextView
-            android:id="@+id/budget"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true" />
-    </LinearLayout>
-     -->
+        android:layout_marginRight="20dp" />
 
 </LinearLayout>

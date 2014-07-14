@@ -325,10 +325,21 @@ public class EntryFormFragment extends DaggerFragment implements ValidationListe
 		amtStr = amtStr.substring(1);
 		amtStr = amtStr.replace(",", "");
 		amt = Double.valueOf(amtStr);
-
-		EntryDTO entryDTO = lazyEntryDTO.get();
-		entryDTO.create(entryDate.getTime(), amt, memoField.getText().toString(), category);
+		
+		if (existingEntry == null)
+		{
+			EntryDTO entryDTO = lazyEntryDTO.get();
+			entryDTO.create(entryDate.getTime(), amt, memoField.getText().toString(), category);
+		}
+		else
+		{
+			existingEntry.setMemo(memoField.getText().toString());
+			existingEntry.setValue(amt);
+			existingEntry.save();
+		}
+		
 		lazyCategoryTallyDTO.get().updateTallies(category);
+
 	}
 
 	private OnDateSetListener datePickerListener = new OnDateSetListener()
